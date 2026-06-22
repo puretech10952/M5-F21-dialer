@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Read the connected Bluetooth headset's name to show it on the in-call screen -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- Optional keep-alive foreground service + restart after reboot -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Lets us prompt the user to exempt the app from battery optimization (Doze) -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <!-- Move system call-recording files into a Music sub-folder (files owned by
+         the MTK recorder, so this needs broad file access on Android 11+) -->
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+
+    <application
+        android:name=".App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.M5Dialer">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <!-- Marks this app as a phone/dialer app so it is eligible for ROLE_DIALER -->
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="tel" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.DIAL" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tel" />
+            </intent-filter>
+        </activity>
+
+        <!-- Recents / call log. The home-screen Send key opens it via CALL_BUTTON. -->
+        <activity
+            android:name=".CallLogActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:windowSoftInputMode="stateHidden|adjustNothing">
+            <!-- App icon opens the call log (like Google Dialer). -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.CALL_BUTTON" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".CallHistoryActivity" android:exported="false" />
+        <activity android:name=".ContactsActivity" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".BlockedNumbersActivity" android:exported="false" />
+        <activity android:name=".QuickResponsesActivity" android:exported="false" />
+        <activity android:name=".AssistedDialingActivity" android:exported="false" />
+        <activity android:name=".CallingAccountsActivity" android:exported="false" />
+        <activity android:name=".AboutActivity" android:exported="false" />
+        <activity android:name=".KeypadSettingsActivity" android:exported="false" />
+        <activity android:name=".RedirectSettingsActivity" android:exported="false" />
+        <activity android:name=".KeepAliveSettingsActivity" android:exported="false" />
+        <activity android:name=".RecordingSettingsActivity" android:exported="false" />
+        <activity android:name=".CallStatsActivity" android:exported="false" />
+        <activity android:name=".WelcomeActivity" android:exported="false" />
+        <activity android:name=".LegalActivity" android:exported="false" />
+        <activity
+            android:name=".SetDefaultActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:excludeFromRecents="true" />
+
+        <!-- The in-call screen. We own this UI as the default dialer. -->
+        <activity
+            android:name=".InCallActivity"
+            android:exported="true"
+            android:theme="@style/Theme.M5Dialer.InCall"
+            android:launchMode="singleTop"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+        <!-- NOTE: exported=true is TEMPORARY so the layout can be previewed via adb;
+             revert to false before release (real calls launch it in-process). -->
+
+        <!-- System hands live calls to this service once we are the default dialer.
+             IN_CALL_SERVICE_UI = true means we provide the in-call UI ourselves. -->
+        <service
+            android:name=".CallService"
+            android:exported="true"
+            android:directBootAware="true"
+            android:foregroundServiceType="phoneCall"
+            android:permission="android.permission.BIND_INCALL_SERVICE">
+            <meta-data
+                android:name="android.telecom.IN_CALL_SERVICE_UI"
+                android:value="true" />
+            <intent-filter>
+                <action android:name="android.telecom.InCallService" />
+            </intent-filter>
+        </service>
+
+        <!-- Optional keep-alive: pins our process so incoming calls still
+             surface on ROMs that freeze background apps (DuraSpeed). Off until
+             enabled in Settings → Keep running in background. -->
+        <service
+            android:name=".KeepAliveService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="keep_dialer_resident_for_incoming_calls" />
+        </service>
+
+        <!-- Restarts the keep-alive service after a reboot (if the user enabled it). -->
+        <receiver
+            android:name=".BootReceiver"
+            android:exported="true"
+            android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Optional, opt-in: redirects the launcher's hardcoded stock-dialer Send
+             key to our recents. Disabled until enabled in Accessibility settings. -->
+        <service
+            android:name=".DialerRedirectService"
+            android:exported="true"
+            android:label="@string/redirect_service_label"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/dialer_redirect_service" />
+        </service>
+
+        <!-- Handles the ongoing-call notification action buttons. -->
+        <receiver
+            android:name=".NotificationActionReceiver"
+            android:exported="false" />
+
+        <!-- Official hook: when we're the default dialer, Telecom delegates the
+             missed-call notification to us here instead of posting its own. -->
+        <receiver
+            android:name=".MissedCallReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.telecom.action.SHOW_MISSED_CALLS_NOTIFICATION" />
+            </intent-filter>
+        </receiver>
+
+    </application>
+
+</manifest>

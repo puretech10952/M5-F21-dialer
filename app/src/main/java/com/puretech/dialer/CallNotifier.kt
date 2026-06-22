@@ -1,0 +1,147 @@
+package com.puretech.dialer
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.telecom.Call
+import androidx.core.app.NotificationCompat
+import androidx.core.app.Person
+
+/**
+ * Ongoing/incoming call notification. Uses CallStyle so the system pins it to
+ * the top of the shade and keeps it visible above other notifications. While
+ * ringing it shows Answer/Decline; while active it shows Hang up + Mute +
+ * Speaker. Tapping it returns to the in-call screen.
+ */
+object CallNotifier {
+
+    // New ids so the importance levels take effect (channels are immutable once created).
+    private const val CHANNEL_INCOMING = "incoming_call_v2"  // HIGH: heads-up + full-screen
+    private const val CHANNEL_ONGOING = "ongoing_call_v2"    // LOW: no heads-up, pinned in shade
+    private const val NOTIF_ID = 42
+
+    fun update(context: Context) {
+        val call = CallManager.call ?: run { cancel(context); return }
+        // While our full-screen call UI is visible, show NO notification — the
+        // screen is the UI. If we get backgrounded (uiVisible=false, e.g. an OEM
+        // like DuraSpeed pushes us back), onStop re-posts the full-screen-intent
+        // notification, which re-launches the screen.
+        if (CallManager.uiVisible) { cancel(context); return }
+        ensureChannels(context)
+
+        @Suppress("DEPRECATION")
+        val ringing = call.state == Call.STATE_RINGING
+
+        val number = CallManager.number()
+        val title = ContactsRepository.displayName(context, number)
+            ?: number.ifBlank { context.getString(R.string.app_name) }
+        val person = Person.Builder().setName(title).build()
+
+        val contentPi = PendingIntent.getActivity(
+            context, 0,
+            Intent(context, InCallActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP),
+            piFlags()
+        )
+
+        val channel = if (ringing) CHANNEL_INCOMING else CHANNEL_ONGOING
+
+        val builder = NotificationCompat.Builder(context, channel)
+            .setSmallIcon(R.drawable.ic_call)
+            .setContentTitle(title)
+            // Tapping the notification returns to the in-call screen.
+            .setContentIntent(contentPi)
+            // Required by the platform for CallStyle notifications (and what pops
+            // the full-screen UI for a ringing call). For the LOW-importance
+            // ongoing notification this satisfies the requirement without actually
+            // launching full-screen.
+            .setFullScreenIntent(contentPi, true)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
+
+        if (ringing) {
+            builder.setStyle(
+                NotificationCompat.CallStyle.forIncomingCall(
+                    person,
+                    action(context, NotificationActionReceiver.ACTION_HANGUP), // decline
+                    action(context, NotificationActionReceiver.ACTION_ANSWER)  // answer
+                )
+            )
+        } else {
+            // Ongoing call: CallStyle pins the notification to the top of the shade
+            // and shows a live call timer; tapping it (contentIntent) returns to the
+            // in-call screen. Mute + Speaker ride along as extra actions.
+            builder.setStyle(
+                NotificationCompat.CallStyle.forOngoingCall(
+                    person,
+                    action(context, NotificationActionReceiver.ACTION_HANGUP)
+                )
+            )
+            // Live elapsed-time timer in the notification / status bar.
+            val connect = CallManager.connectTimeMillis()
+            if (connect > 0) {
+                builder.setWhen(connect).setShowWhen(true).setUsesChronometer(true)
+            } else {
+                builder.setShowWhen(false)
+            }
+
+            val muted = CallManager.isMuted()
+            val speakerOn = CallManager.isSpeakerOn()
+            builder.addAction(
+                if (muted) R.drawable.ic_mic_off else R.drawable.ic_mic,
+                context.getString(if (muted) R.string.ctl_unmute else R.string.ctl_mute),
+                action(context, NotificationActionReceiver.ACTION_MUTE)
+            )
+            builder.addAction(
+                R.drawable.ic_speaker,
+                context.getString(if (speakerOn) R.string.notif_speaker_on else R.string.ctl_speaker),
+                action(context, NotificationActionReceiver.ACTION_SPEAKER)
+            )
+        }
+
+        manager(context).notify(NOTIF_ID, builder.build())
+    }
+
+    fun cancel(context: Context) = manager(context).cancel(NOTIF_ID)
+
+    private fun action(context: Context, a: String): PendingIntent {
+        val i = Intent(context, NotificationActionReceiver::class.java).setAction(a)
+        return PendingIntent.getBroadcast(context, a.hashCode(), i, piFlags())
+    }
+
+    private fun piFlags(): Int {
+        var f = PendingIntent.FLAG_UPDATE_CURRENT
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) f = f or PendingIntent.FLAG_IMMUTABLE
+        return f
+    }
+
+    private fun ensureChannels(context: Context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        val nm = manager(context)
+        if (nm.getNotificationChannel(CHANNEL_INCOMING) == null) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_INCOMING,
+                    context.getString(R.string.notif_channel_incoming),
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+            )
+        }
+        if (nm.getNotificationChannel(CHANNEL_ONGOING) == null) {
+            nm.createNotificationChannel(
+                NotificationChannel(
+                    CHANNEL_ONGOING,
+                    context.getString(R.string.notif_channel),
+                    NotificationManager.IMPORTANCE_LOW
+                )
+            )
+        }
+    }
+
+    private fun manager(context: Context): NotificationManager =
+        context.getSystemService(NotificationManager::class.java)
+}

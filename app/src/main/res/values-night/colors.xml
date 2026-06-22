@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="log_screen_bg">#0F1113</color>
+    <color name="log_card_bg">#1E2022</color>
+    <color name="log_shade_bg">#2A2C2E</color>
+    <color name="carrier_blue">#8AB4F8</color>
+    <color name="missed_red">#F2837C</color>
+
+    <!-- In-call screen (dark) -->
+    <color name="incall_bg">#202124</color>
+    <color name="incall_name">#FFFFFF</color>
+    <color name="incall_subtitle">#9AA0A6</color>
+    <color name="incall_status">#BDC1C6</color>
+    <color name="incall_panel">#2A2B2E</color>
+    <color name="incall_control_bg">#33FFFFFF</color>
+    <color name="incall_control_icon">#FFFFFF</color>
+    <color name="incall_control_active_bg">#FFFFFF</color>
+    <color name="incall_control_active_icon">#202124</color>
+    <color name="incall_dtmf_key_bg">#3C4043</color>
+</resources>

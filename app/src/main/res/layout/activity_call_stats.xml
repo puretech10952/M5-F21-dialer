@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSurface"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="8dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="6dp">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/nav_durations"
+            android:padding="10dp"
+            android:src="@drawable/ic_back"
+            app:tint="?attr/colorOnSurface" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:text="@string/nav_durations"
+            android:textColor="?attr/colorOnSurface"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="14dp"
+            android:paddingBottom="24dp">
+
+            <!-- Hero: total talk time -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="?attr/colorPrimaryContainer">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="24dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:src="@drawable/ic_history"
+                        android:contentDescription="@string/stats_total_talk"
+                        app:tint="?attr/colorOnPrimaryContainer" />
+
+                    <TextView
+                        android:id="@+id/totalTalk"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textSize="40sp"
+                        android:textStyle="bold"
+                        tools:text="14h 32m" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stats_total_talk"
+                        android:textColor="?attr/colorOnPrimaryContainer"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Incoming -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/SettingsGroupCard"
+                android:layout_marginHorizontal="0dp"
+                android:layout_marginTop="12dp">
+
+                <LinearLayout style="@style/StatRow">
+
+                    <ImageView style="@style/StatIcon"
+                        android:src="@drawable/ic_call_received"
+                        android:contentDescription="@string/stats_incoming" />
+
+                    <LinearLayout style="@style/StatText">
+                        <TextView style="@style/StatLabel" android:text="@string/stats_incoming" />
+                        <TextView android:id="@+id/incomingCount" style="@style/StatSub"
+                            tools:text="128 calls" />
+                    </LinearLayout>
+
+                    <TextView android:id="@+id/incomingDuration" style="@style/StatValue"
+                        tools:text="6h 02m" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Outgoing -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/SettingsGroupCard"
+                android:layout_marginHorizontal="0dp"
+                android:layout_marginTop="10dp">
+
+                <LinearLayout style="@style/StatRow">
+
+                    <ImageView style="@style/StatIcon"
+                        android:src="@drawable/ic_call_made"
+                        android:contentDescription="@string/stats_outgoing" />
+
+                    <LinearLayout style="@style/StatText">
+                        <TextView style="@style/StatLabel" android:text="@string/stats_outgoing" />
+                        <TextView android:id="@+id/outgoingCount" style="@style/StatSub"
+                            tools:text="96 calls" />
+                    </LinearLayout>
+
+                    <TextView android:id="@+id/outgoingDuration" style="@style/StatValue"
+                        tools:text="8h 30m" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Missed -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/SettingsGroupCard"
+                android:layout_marginHorizontal="0dp"
+                android:layout_marginTop="10dp">
+
+                <LinearLayout style="@style/StatRow">
+
+                    <ImageView style="@style/StatIcon"
+                        android:src="@drawable/ic_call_missed"
+                        android:contentDescription="@string/stats_missed" />
+
+                    <LinearLayout style="@style/StatText">
+                        <TextView style="@style/StatLabel" android:text="@string/stats_missed" />
+                        <TextView style="@style/StatSub" android:text="@string/stats_missed_sub" />
+                    </LinearLayout>
+
+                    <TextView android:id="@+id/missedCount" style="@style/StatValue"
+                        tools:text="12" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Call activity graph: volume of calls by day / month / year -->
+            <com.google.android.material.card.MaterialCardView
+                style="@style/SettingsGroupCard"
+                android:layout_marginHorizontal="0dp"
+                android:layout_marginTop="18dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingHorizontal="18dp"
+                    android:paddingVertical="18dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/stats_chart_title"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="17sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:text="@string/stats_chart_sub"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="13sp" />
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/rangeToggle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        app:singleSelection="true"
+                        app:selectionRequired="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRangeDay"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="@string/stats_range_day" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRangeMonth"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="@string/stats_range_month" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRangeYear"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"
+                            android:text="@string/stats_range_year" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                    <com.puretech.dialer.BarChartView
+                        android:id="@+id/chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="190dp"
+                        android:layout_marginTop="16dp" />
+
+                    <TextView
+                        android:id="@+id/chartEmpty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:paddingVertical="36dp"
+                        android:text="@string/stats_chart_empty"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

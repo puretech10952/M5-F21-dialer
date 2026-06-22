@@ -1,0 +1,300 @@
+package com.puretech.dialer
+
+import android.content.Context
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.CallLog
+import android.provider.ContactsContract
+
+/** One recents row (consecutive calls with the same number are grouped). */
+data class CallLogEntry(
+    val number: String,
+    val name: String?,
+    val photoUri: Uri?,
+    val type: Int,
+    val date: Long,
+    val count: Int,
+    val isHd: Boolean,
+    /** Phone number type (Mobile/Home/Work…) cached on the call, when known. */
+    val numberType: Int = 0,
+    val numberLabel: String? = null,
+    /** Geocoded location (e.g. "New City, NY") for unknown callers. */
+    val geocoded: String? = null,
+    /** SIM label (e.g. "SIM 1") — only set on dual-SIM devices. */
+    val simLabel: String? = null,
+    /** True when this row is a contact search result rather than a real call. */
+    val asContact: Boolean = false
+)
+
+/** A single call (for the per-number History screen). */
+data class CallDetail(val type: Int, val date: Long, val duration: Long)
+
+/** Aggregate call totals across the whole call log (since ever). */
+data class CallStats(
+    val incomingCount: Int,
+    val incomingDuration: Long,
+    val outgoingCount: Int,
+    val outgoingDuration: Long,
+    val missedCount: Int
+) {
+    val totalDuration: Long get() = incomingDuration + outgoingDuration
+    val answeredCount: Int get() = incomingCount + outgoingCount
+}
+
+object CallLogRepository {
+
+    private const val FEATURE_HD_VOICE = 0x04  // CallLog.Calls.FEATURES_HD_VOICE
+
+    fun load(context: Context, missedOnly: Boolean = false, limit: Int = 200): List<CallLogEntry> {
+        if (context.checkSelfPermission(android.Manifest.permission.READ_CALL_LOG)
+            != PackageManager.PERMISSION_GRANTED
+        ) return emptyList()
+
+        val projection = arrayOf(
+            CallLog.Calls.NUMBER,
+            CallLog.Calls.CACHED_NAME,
+            CallLog.Calls.CACHED_PHOTO_URI,
+            CallLog.Calls.CACHED_NUMBER_TYPE,
+            CallLog.Calls.CACHED_NUMBER_LABEL,
+            CallLog.Calls.GEOCODED_LOCATION,
+            CallLog.Calls.PHONE_ACCOUNT_ID,
+            CallLog.Calls.TYPE,
+            CallLog.Calls.DATE,
+            CallLog.Calls.FEATURES
+        )
+        val selection = if (missedOnly) "${CallLog.Calls.TYPE} = ?" else null
+        val args = if (missedOnly) arrayOf(CallLog.Calls.MISSED_TYPE.toString()) else null
+
+        // Resolve SIM labels once per load (only meaningful on dual-SIM devices).
+        val simLabels: Map<String, String> =
+            if (CallingAccounts.isMultiSim(context))
+                CallingAccounts.list(context).associate { it.id to CallingAccounts.label(context, it) }
+            else emptyMap()
+
+        val raw = ArrayList<CallLogEntry>()
+        try {
+        context.contentResolver.query(
+            CallLog.Calls.CONTENT_URI, projection, selection, args,
+            "${CallLog.Calls.DATE} DESC"
+        )?.use { c ->
+            val numIdx = c.getColumnIndex(CallLog.Calls.NUMBER)
+            val nameIdx = c.getColumnIndex(CallLog.Calls.CACHED_NAME)
+            val photoIdx = c.getColumnIndex(CallLog.Calls.CACHED_PHOTO_URI)
+            val nTypeIdx = c.getColumnIndex(CallLog.Calls.CACHED_NUMBER_TYPE)
+            val nLabelIdx = c.getColumnIndex(CallLog.Calls.CACHED_NUMBER_LABEL)
+            val geoIdx = c.getColumnIndex(CallLog.Calls.GEOCODED_LOCATION)
+            val acctIdx = c.getColumnIndex(CallLog.Calls.PHONE_ACCOUNT_ID)
+            val typeIdx = c.getColumnIndex(CallLog.Calls.TYPE)
+            val dateIdx = c.getColumnIndex(CallLog.Calls.DATE)
+            val featIdx = c.getColumnIndex(CallLog.Calls.FEATURES)
+            while (c.moveToNext()) {
+                if (raw.size >= limit) break
+                val number = if (numIdx >= 0) c.getString(numIdx) ?: "" else ""
+                // CACHED_NAME/PHOTO come back as "" (not null) when the system never
+                // matched the number to a contact — treat blank as "no name" so the
+                // resolver below fills it in via PhoneLookup.
+                val name = if (nameIdx >= 0) c.getString(nameIdx)?.ifBlank { null } else null
+                val photo = if (photoIdx >= 0)
+                    c.getString(photoIdx)?.ifBlank { null }?.let { Uri.parse(it) } else null
+                val nType = if (nTypeIdx >= 0) c.getInt(nTypeIdx) else 0
+                val nLabel = if (nLabelIdx >= 0) c.getString(nLabelIdx) else null
+                val geo = if (geoIdx >= 0) c.getString(geoIdx) else null
+                val acctId = if (acctIdx >= 0) c.getString(acctIdx) else null
+                val type = if (typeIdx >= 0) c.getInt(typeIdx) else CallLog.Calls.INCOMING_TYPE
+                val date = if (dateIdx >= 0) c.getLong(dateIdx) else 0L
+                val feat = if (featIdx >= 0) c.getInt(featIdx) else 0
+                raw.add(
+                    CallLogEntry(
+                        number, name, photo, type, date, 1, (feat and FEATURE_HD_VOICE) != 0,
+                        numberType = nType, numberLabel = nLabel, geocoded = geo,
+                        simLabel = simLabels[acctId]
+                    )
+                )
+            }
+        }
+        } catch (e: Exception) {
+            android.util.Log.w("M5CallLog", "load failed: ${e.message}")
+        }
+        return resolveNames(context, group(raw))
+    }
+
+    private data class ContactInfo(val name: String, val photo: Uri?, val type: Int, val label: String?)
+
+    /**
+     * The system's CACHED_NAME can be empty when a call arrived as "+1 845…" but
+     * the contact is saved as a bare 10-digit number (or the cache is stale).
+     * Fill in the contact name/photo ourselves via PhoneLookup, which normalizes
+     * the country code, so those rows show the contact instead of a bare number.
+     */
+    private fun resolveNames(context: Context, entries: List<CallLogEntry>): List<CallLogEntry> {
+        if (context.checkSelfPermission(android.Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED
+        ) return entries
+        val cache = HashMap<String, ContactInfo?>()
+        return entries.map { e ->
+            if (e.name != null || e.number.isBlank()) e
+            else {
+                val info = cache.getOrPut(e.number) { lookupContact(context, e.number) }
+                if (info != null) e.copy(
+                    name = info.name,
+                    photoUri = e.photoUri ?: info.photo,
+                    numberType = if (e.numberType > 0) e.numberType else info.type,
+                    numberLabel = e.numberLabel ?: info.label
+                ) else e
+            }
+        }
+    }
+
+    private fun lookupContact(context: Context, number: String): ContactInfo? {
+        val uri = Uri.withAppendedPath(
+            ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number)
+        )
+        return try {
+            context.contentResolver.query(
+                uri,
+                arrayOf(
+                    ContactsContract.PhoneLookup.DISPLAY_NAME,
+                    ContactsContract.PhoneLookup.PHOTO_URI,
+                    ContactsContract.PhoneLookup.TYPE,
+                    ContactsContract.PhoneLookup.LABEL
+                ),
+                null, null, null
+            )?.use { c ->
+                if (c.moveToFirst()) {
+                    val name = c.getString(0)
+                    if (!name.isNullOrBlank()) ContactInfo(
+                        name,
+                        c.getString(1)?.let { Uri.parse(it) },
+                        c.getInt(2),
+                        c.getString(3)
+                    ) else null
+                } else null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /** Merge consecutive entries that share the same number into one row + count. */
+    private fun group(entries: List<CallLogEntry>): List<CallLogEntry> {
+        val out = ArrayList<CallLogEntry>()
+        for (e in entries) {
+            val last = out.lastOrNull()
+            if (last != null && sameNumber(last.number, e.number)) {
+                out[out.size - 1] = last.copy(
+                    count = last.count + 1,
+                    isHd = last.isHd || e.isHd
+                )
+            } else {
+                out.add(e)
+            }
+        }
+        return out
+    }
+
+    /** Every individual call (with duration) for one number — for the History screen. */
+    fun loadForNumber(context: Context, number: String, limit: Int = 200): List<CallDetail> {
+        if (context.checkSelfPermission(android.Manifest.permission.READ_CALL_LOG)
+            != PackageManager.PERMISSION_GRANTED
+        ) return emptyList()
+        val digits = number.filter { it.isDigit() }
+        val last = if (digits.length >= 7) digits.takeLast(7) else digits
+        val out = ArrayList<CallDetail>()
+        try {
+            context.contentResolver.query(
+                CallLog.Calls.CONTENT_URI,
+                arrayOf(CallLog.Calls.NUMBER, CallLog.Calls.TYPE, CallLog.Calls.DATE, CallLog.Calls.DURATION),
+                "${CallLog.Calls.NUMBER} LIKE ?", arrayOf("%$last"),
+                "${CallLog.Calls.DATE} DESC"
+            )?.use { c ->
+                val numIdx = c.getColumnIndex(CallLog.Calls.NUMBER)
+                val typeIdx = c.getColumnIndex(CallLog.Calls.TYPE)
+                val dateIdx = c.getColumnIndex(CallLog.Calls.DATE)
+                val durIdx = c.getColumnIndex(CallLog.Calls.DURATION)
+                while (c.moveToNext() && out.size < limit) {
+                    val n = if (numIdx >= 0) c.getString(numIdx) ?: "" else ""
+                    if (!sameNumber(n, number)) continue
+                    out.add(
+                        CallDetail(
+                            if (typeIdx >= 0) c.getInt(typeIdx) else 0,
+                            if (dateIdx >= 0) c.getLong(dateIdx) else 0L,
+                            if (durIdx >= 0) c.getLong(durIdx) else 0L
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("M5CallLog", "history failed: ${e.message}")
+        }
+        return out
+    }
+
+    /** Aggregate totals over the entire call log: counts and durations by type. */
+    fun stats(context: Context): CallStats {
+        if (context.checkSelfPermission(android.Manifest.permission.READ_CALL_LOG)
+            != PackageManager.PERMISSION_GRANTED
+        ) return CallStats(0, 0L, 0, 0L, 0)
+        var inC = 0; var inD = 0L; var outC = 0; var outD = 0L; var missed = 0
+        try {
+            context.contentResolver.query(
+                CallLog.Calls.CONTENT_URI,
+                arrayOf(CallLog.Calls.TYPE, CallLog.Calls.DURATION),
+                null, null, null
+            )?.use { c ->
+                val typeIdx = c.getColumnIndex(CallLog.Calls.TYPE)
+                val durIdx = c.getColumnIndex(CallLog.Calls.DURATION)
+                while (c.moveToNext()) {
+                    val type = if (typeIdx >= 0) c.getInt(typeIdx) else 0
+                    val dur = if (durIdx >= 0) c.getLong(durIdx) else 0L
+                    when (type) {
+                        CallLog.Calls.OUTGOING_TYPE -> { outC++; outD += dur }
+                        CallLog.Calls.INCOMING_TYPE,
+                        CallLog.Calls.ANSWERED_EXTERNALLY_TYPE -> { inC++; inD += dur }
+                        CallLog.Calls.MISSED_TYPE, CallLog.Calls.REJECTED_TYPE -> missed++
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("M5CallLog", "stats failed: ${e.message}")
+        }
+        return CallStats(inC, inD, outC, outD, missed)
+    }
+
+    /** Every call's timestamp (millis) — for the call-activity graph. */
+    fun callDates(context: Context): LongArray {
+        if (context.checkSelfPermission(android.Manifest.permission.READ_CALL_LOG)
+            != PackageManager.PERMISSION_GRANTED
+        ) return LongArray(0)
+        val out = ArrayList<Long>()
+        try {
+            context.contentResolver.query(
+                CallLog.Calls.CONTENT_URI,
+                arrayOf(CallLog.Calls.DATE),
+                null, null, "${CallLog.Calls.DATE} DESC"
+            )?.use { c ->
+                val dateIdx = c.getColumnIndex(CallLog.Calls.DATE)
+                while (c.moveToNext()) out.add(if (dateIdx >= 0) c.getLong(dateIdx) else 0L)
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("M5CallLog", "callDates failed: ${e.message}")
+        }
+        return out.toLongArray()
+    }
+
+    /**
+     * Two numbers are the same contact when their national digits match. A
+     * 10-digit number and the same number with a "+1" country code (11 digits)
+     * compare equal by looking at the last 10 digits.
+     */
+    private fun sameNumber(a: String, b: String): Boolean {
+        val da = a.filter { it.isDigit() }
+        val db = b.filter { it.isDigit() }
+        if (da.isEmpty() || db.isEmpty()) return da == db
+        val n = minOf(da.length, db.length)
+        return when {
+            n >= 10 -> da.takeLast(10) == db.takeLast(10)
+            n >= 7 -> da.takeLast(n) == db.takeLast(n)
+            else -> da == db
+        }
+    }
+}

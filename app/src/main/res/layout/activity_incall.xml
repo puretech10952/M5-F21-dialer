@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/incall_bg"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
+
+    <!-- Header, with the recording indicator OVERLAID top-left so it never pushes
+         the layout down. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="18dp"
+        android:paddingHorizontal="20dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/hdIcon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/ic_hd"
+                android:visibility="gone"
+                app:tint="@color/incall_subtitle"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/incall_status"
+                android:textSize="15sp"
+                tools:text="00:15" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/nameText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/incall_name"
+            android:textSize="26sp"
+            tools:text="Kol Mevaser" />
+
+        <TextView
+            android:id="@+id/numberText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/incall_subtitle"
+            android:textSize="15sp"
+            tools:text="845-351-1200" />
+
+        <!-- DTMF digits pressed during the call (e.g. hotline menus) -->
+        <TextView
+            android:id="@+id/dtmfDigits"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="start"
+            android:textColor="@color/incall_name"
+            android:textSize="18sp"
+            android:letterSpacing="0.15"
+            android:visibility="gone"
+            tools:text="1 2 3"
+            tools:visibility="visible" />
+    </LinearLayout>
+
+        <!-- Blinking red dot + REC, overlaid at the top-left while recording. -->
+        <LinearLayout
+            android:id="@+id/recordIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|start"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingTop="12dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <View
+                android:layout_width="11dp"
+                android:layout_height="11dp"
+                android:background="@drawable/bg_record_dot" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:text="@string/rec_label"
+                android:textColor="#FF1744"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Flexible middle: holds the avatar (which gives up space when the screen
+         is tight, keeping the bottom card pinned) and the DTMF pad. -->
+    <FrameLayout
+        android:id="@+id/middle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- Big avatar with incoming-call echo waves radiating from behind it -->
+        <FrameLayout
+            android:id="@+id/avatar"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_gravity="center">
+
+            <com.puretech.dialer.PulseRingView
+                android:id="@+id/pulseRing"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <TextView
+                android:id="@+id/avatarInitial"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center"
+                android:background="@drawable/bg_circle_solid"
+                android:gravity="center"
+                android:textColor="#FFFFFF"
+                android:textSize="40sp"
+                android:visibility="gone"
+                tools:text="K"
+                tools:visibility="visible" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/contactPhoto"
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center"
+                android:scaleType="centerInside"
+                android:visibility="gone"
+                app:shapeAppearanceOverlay="@style/CircleImageView" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/dtmfOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="bottom|center_horizontal"
+            android:paddingBottom="10dp"
+            android:visibility="gone">
+
+            <!-- Collapse button to close the in-call keypad -->
+            <ImageView
+                android:id="@+id/btnDtmfCollapse"
+                android:layout_width="52dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="2dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="@string/hide_keypad"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_arrow_drop_down"
+                app:tint="@color/incall_subtitle" />
+
+            <GridLayout
+                android:id="@+id/dtmfPad"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:columnCount="3"
+                android:rowCount="4">
+
+                <Button android:text="1" style="@style/DtmfKey" />
+                <Button android:text="2" style="@style/DtmfKey" />
+                <Button android:text="3" style="@style/DtmfKey" />
+                <Button android:text="4" style="@style/DtmfKey" />
+                <Button android:text="5" style="@style/DtmfKey" />
+                <Button android:text="6" style="@style/DtmfKey" />
+                <Button android:text="7" style="@style/DtmfKey" />
+                <Button android:text="8" style="@style/DtmfKey" />
+                <Button android:text="9" style="@style/DtmfKey" />
+                <Button android:text="*" style="@style/DtmfKey" />
+                <Button android:text="0" style="@style/DtmfKey" />
+                <Button android:text="#" style="@style/DtmfKey" />
+            </GridLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+    <!-- Held / second call strip (tap to swap) -->
+    <LinearLayout
+        android:id="@+id/secondaryStrip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/incall_panel"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_swap"
+            app:tint="@color/incall_subtitle" />
+
+        <TextView
+            android:id="@+id/secondaryText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="10dp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/incall_subtitle"
+            android:textSize="14sp"
+            tools:text="Mum • On hold" />
+    </LinearLayout>
+
+    <!-- Call-waiting panel (a 2nd call rings while on a call) -->
+    <LinearLayout
+        android:id="@+id/waitingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingBottom="20dp"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <TextView
+            android:id="@+id/waitingText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="@color/incall_name"
+            android:textSize="16sp"
+            tools:text="Incoming: Mum" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <LinearLayout style="@style/ControlGroup">
+                <ImageView android:id="@+id/btnWaitDecline" style="@style/ControlIcon"
+                    android:background="@drawable/bg_circle_end" android:src="@drawable/ic_call_end" />
+                <TextView style="@style/ControlLabel" android:text="@string/ctl_decline" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ControlGroup">
+                <ImageView android:id="@+id/btnWaitHold" style="@style/ControlIcon"
+                    android:background="@drawable/bg_circle_answer" android:src="@drawable/ic_hold" />
+                <TextView style="@style/ControlLabel" android:text="@string/wait_answer_hold" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ControlGroup">
+                <ImageView android:id="@+id/btnWaitEnd" style="@style/ControlIcon"
+                    android:background="@drawable/bg_circle_answer" android:src="@drawable/ic_call" />
+                <TextView style="@style/ControlLabel" android:text="@string/wait_answer_end" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnWaitMessage"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/reply_message"
+            android:textColor="#8AB4F8"
+            app:icon="@drawable/ic_message"
+            app:iconTint="#8AB4F8" />
+    </LinearLayout>
+
+    <!-- Single incoming-call: reply button + Answer/Decline -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnIncomingMessage"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/reply_message"
+        android:textColor="#8AB4F8"
+        android:visibility="gone"
+        app:icon="@drawable/ic_message"
+        app:iconTint="#8AB4F8" />
+
+    <LinearLayout
+        android:id="@+id/incomingControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="24dp"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:visibility="gone"
+        tools:visibility="gone">
+
+        <LinearLayout style="@style/ControlGroup">
+            <ImageView
+                android:id="@+id/btnAnswer"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_circle_answer"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="@string/ctl_answer"
+                android:padding="17dp"
+                android:src="@drawable/ic_call" />
+        </LinearLayout>
+
+        <LinearLayout style="@style/ControlGroup">
+            <ImageView
+                android:id="@+id/btnDecline"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:background="@drawable/bg_circle_end"
+                android:clickable="true"
+                android:focusable="true"
+                android:contentDescription="@string/ctl_decline"
+                android:padding="17dp"
+                android:src="@drawable/ic_call_end" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Active-call bottom panel: Record, Mute, Speaker, More + End -->
+    <LinearLayout
+        android:id="@+id/bottomPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_call_panel"
+        android:orientation="vertical"
+        android:paddingTop="18dp"
+        android:paddingBottom="16dp"
+        android:paddingHorizontal="8dp">
+
+        <LinearLayout
+            android:id="@+id/controlsRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="4">
+
+            <LinearLayout style="@style/ControlGroup">
+                <ImageView android:id="@+id/btnKeypad" style="@style/ControlIcon" android:src="@drawable/ic_dialpad" />
+                <TextView android:id="@+id/lblKeypad" style="@style/ControlLabel" android:text="@string/ctl_keypad" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ControlGroup">
+                <ImageView android:id="@+id/btnMute" style="@style/ControlIcon" android:src="@drawable/ic_mic" />
+                <TextView android:id="@+id/lblMute" style="@style/ControlLabel" android:text="@string/ctl_mute" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ControlGroup">
+                <ImageView android:id="@+id/btnRoute" style="@style/ControlIcon" android:src="@drawable/ic_speaker" />
+                <TextView android:id="@+id/lblRoute" style="@style/ControlLabel" android:text="@string/ctl_speaker" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/ControlGroup">
+                <ImageView android:id="@+id/btnMore" style="@style/ControlIcon" android:src="@drawable/ic_more" />
+                <TextView style="@style/ControlLabel" android:text="@string/ctl_more" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/btnEnd"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_end_pill"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/ctl_end"
+            android:padding="15dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_call_end" />
+    </LinearLayout>
+
+</LinearLayout>

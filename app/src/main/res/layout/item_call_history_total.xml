@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Per-number "total talk time" card, rendered as the first row of the history
+     list so it scrolls away with the calls instead of staying pinned. -->
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="14dp"
+    android:layout_marginTop="2dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="22dp"
+    app:cardElevation="0dp"
+    app:cardBackgroundColor="?attr/colorSecondaryContainer">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="14dp">
+
+        <ImageView
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="16dp"
+            android:padding="9dp"
+            android:background="@drawable/bg_circle_solid"
+            android:backgroundTint="?attr/colorPrimary"
+            android:src="@drawable/ic_history"
+            android:contentDescription="@string/stats_total_talk"
+            app:tint="?attr/colorOnPrimary" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/stats_total_talk"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/totalDuration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="?attr/colorOnSecondaryContainer"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                tools:text="1h 24m" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/totalCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="?attr/colorOnSecondaryContainer"
+            android:textSize="13sp"
+            tools:text="32 calls" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

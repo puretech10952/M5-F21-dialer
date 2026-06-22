@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Phone</string>
+    <string name="enter_number">Enter a number</string>
+    <string name="backspace">Delete</string>
+    <string name="dial_more_options">More options</string>
+    <string name="feature_coming_soon">Feature coming soon</string>
+    <string name="drawer_version">PureTech Dialer Version %1$s</string>
+    <string name="setting_about">About</string>
+    <string name="setting_about_summary">Version, copyright and contact</string>
+    <string name="about_app_name">PureTech Dialer</string>
+    <string name="about_version">Version %1$s (%2$d)</string>
+    <string name="about_copyright">© 2026 PureTech</string>
+    <string name="about_rights">All rights reserved.</string>
+    <string name="dial_add_pause">Add 2-sec pause</string>
+    <string name="dial_add_wait">Add wait</string>
+    <string name="ongoing_call">Ongoing call</string>
+    <string name="notif_hangup">Hang up</string>
+    <string name="notif_speaker_on">Speaker on</string>
+    <string name="notif_channel">Ongoing call</string>
+    <string name="notif_channel_incoming">Incoming calls</string>
+    <!-- Call log -->
+    <string name="recents_title">Recents</string>
+    <string name="filter_all">All</string>
+    <string name="filter_missed">Missed</string>
+    <string name="filter_received">Received</string>
+    <string name="filter_outgoing">Outgoing</string>
+    <string name="filter_contacts">Contacts</string>
+    <string name="filter_nonspam">Non-spam</string>
+    <string name="unknown_caller">Unknown</string>
+    <string name="just_now">Just now</string>
+    <string name="min_ago_fmt">%1$d min ago</string>
+    <string name="nav_recents">Recents</string>
+    <string name="nav_keypad">Keypad</string>
+    <string name="nav_voicemail">Voicemail</string>
+    <string name="no_recents">No recent calls</string>
+    <string name="recents_today">Today</string>
+    <string name="recents_yesterday">Yesterday</string>
+    <string name="recents_older">Older</string>
+    <string name="favorites">Favorites</string>
+    <string name="view_contacts">View contacts</string>
+    <string name="hist_incoming">Incoming call</string>
+    <string name="hist_outgoing">Outgoing call</string>
+    <string name="hist_missed">Missed call</string>
+    <string name="log_message">Message</string>
+    <string name="log_copy">Copy number</string>
+    <string name="log_delete">Delete</string>
+    <string name="log_history">History</string>
+    <string name="log_add_contact">Add to contacts</string>
+    <string name="search_hint">Search contacts</string>
+    <string name="nav_contacts">Contacts</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_durations">Call durations</string>
+    <string name="history_title">Call history</string>
+    <string name="contacts_title">Contacts</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_placeholder">More settings coming soon.</string>
+    <string name="settings_group_general">General</string>
+    <string name="settings_group_calls">Calls</string>
+    <string name="settings_group_about">About</string>
+
+    <!-- Long-press entry actions -->
+    <string name="block_number">Block number</string>
+    <string name="delete_entry">Delete entry</string>
+    <string name="number_blocked">Number blocked</string>
+    <string name="entry_deleted">Call deleted</string>
+
+    <!-- Settings entries -->
+    <string name="setting_theme">Theme</string>
+    <string name="setting_theme_light">Light</string>
+    <string name="setting_theme_dark">Dark</string>
+    <string name="setting_theme_system">Same as device</string>
+    <string name="setting_blocked">Blocked numbers</string>
+    <string name="setting_blocked_summary">Calls and texts from blocked numbers are rejected</string>
+    <string name="setting_quick_responses">Quick responses</string>
+    <string name="setting_quick_responses_summary">Edit replies sent when declining a call</string>
+    <string name="setting_assisted">Assisted dialing</string>
+    <string name="setting_assisted_summary">Predict and add a country code when calling abroad</string>
+    <string name="setting_assisted_toggle">Use assisted dialing</string>
+    <string name="setting_home_country">Default home country</string>
+    <string name="setting_calling_accounts">Calling accounts</string>
+    <string name="setting_default_sim">Default SIM for calls</string>
+    <string name="setting_single_sim">Only one SIM is available on this device</string>
+
+    <!-- Blocked numbers screen -->
+    <string name="blocked_empty">No blocked numbers</string>
+    <string name="add_number_hint">Add a number</string>
+    <string name="action_add">Add</string>
+    <string name="action_unblock">Unblock</string>
+
+    <!-- Calling accounts -->
+    <string name="account_ask">Ask every time</string>
+    <string name="country_auto">Detect automatically (%1$s)</string>
+    <string name="duration_sec">%1$ds</string>
+    <string name="duration_min">%1$d min %2$d s</string>
+    <string name="log_perm_needed">Allow call log access to see recents</string>
+
+    <string name="opt_edit">Edit before dialing</string>
+    <string name="opt_message">Message</string>
+    <string name="opt_copy">Copy number</string>
+    <string name="copied">Number copied</string>
+    <string name="banner_not_default">M5 Dialer isn\'t your default phone app</string>
+    <string name="banner_set_default">Set as default</string>
+    <string name="banner_default_title">Set PureTech as your phone app</string>
+    <string name="banner_default_desc">Calls open in PureTech only when it\'s your default.</string>
+
+    <!-- Full-screen "must be default" gate -->
+    <string name="gate_title">Set PureTech as your phone app</string>
+    <string name="gate_desc">PureTech Phone needs to be your default phone app to place calls, show incoming calls, and keep your call history. Set it as default to continue.</string>
+    <string name="gate_button">Set as default phone app</string>
+    <string name="gate_hint">You can change this anytime in Android Settings.</string>
+
+    <!-- Call durations (lifetime stats) -->
+    <string name="stats_total_talk">Total talk time</string>
+    <string name="stats_incoming">Incoming</string>
+    <string name="stats_outgoing">Outgoing</string>
+    <string name="stats_missed">Missed</string>
+    <string name="stats_missed_sub">Calls you didn\'t answer</string>
+    <plurals name="stats_calls">
+        <item quantity="one">%1$d call</item>
+        <item quantity="other">%1$d calls</item>
+    </plurals>
+    <string name="stats_chart_title">Call activity</string>
+    <string name="stats_chart_sub">How many calls you make and take over time.</string>
+    <string name="stats_range_day">Day</string>
+    <string name="stats_range_month">Month</string>
+    <string name="stats_range_year">Year</string>
+    <string name="stats_chart_empty">No calls yet to chart.</string>
+
+    <!-- Welcome / onboarding -->
+    <string name="welcome_title">Welcome to PureTech Phone</string>
+    <string name="welcome_subtitle">A fast, private phone app built for your keypad device.</string>
+    <string name="welcome_feat_keypad_title">Dial with your keypad</string>
+    <string name="welcome_feat_keypad_desc">Type numbers and search contacts with the physical keys.</string>
+    <string name="welcome_feat_record_title">Record your calls</string>
+    <string name="welcome_feat_record_desc">Capture both sides, saved to Music / Call recordings. Before recording, you must let the other person know the call is being recorded.</string>
+    <string name="welcome_feat_incoming_title">Never miss a call</string>
+    <string name="welcome_feat_incoming_desc">A reliable full-screen incoming call, even in the background.</string>
+    <string name="welcome_feat_block_title">Block &amp; reply fast</string>
+    <string name="welcome_feat_block_desc">Block unwanted numbers and answer with a quick message.</string>
+    <string name="welcome_default_title">Make it your phone app</string>
+    <string name="welcome_default_desc">Set PureTech as your default so every call opens here.</string>
+    <string name="welcome_set_default">Set as default phone app</string>
+    <string name="welcome_get_started">Get started</string>
+    <string name="welcome_consent">I have read and agree to the Terms of Service and Privacy Policy.</string>
+    <string name="welcome_agree_continue">Agree &amp; continue</string>
+
+    <!-- Device IMEI (*#06#) -->
+    <string name="imei_title">Device identifiers</string>
+    <string name="imei_copy">Copy</string>
+    <string name="imei_in_settings">IMEI is shown here under your device details</string>
+
+    <!-- Legal documents -->
+    <string name="legal_terms">Terms of Service</string>
+    <string name="legal_privacy">Privacy Policy</string>
+
+    <!-- In-call controls -->
+    <string name="ctl_mute">Mute</string>
+    <string name="ctl_unmute">Unmute</string>
+    <string name="ctl_keypad">Keypad</string>
+    <string name="ctl_speaker">Speaker</string>
+    <string name="ctl_record">Record</string>
+    <string name="ctl_recording">Recording</string>
+    <string name="ctl_end">End call</string>
+    <string name="ctl_answer">Answer</string>
+    <string name="ctl_decline">Decline</string>
+    <string name="ctl_add">Add call</string>
+    <string name="ctl_hold">Hold</string>
+    <string name="ctl_resume">Resume</string>
+    <string name="ctl_swap">Swap</string>
+    <string name="ctl_merge">Merge</string>
+    <string name="ctl_more">More</string>
+    <string name="ctl_stop_record">Stop recording</string>
+    <string name="route_earpiece">Earpiece</string>
+    <string name="route_speaker">Speaker</string>
+    <string name="route_bluetooth">Bluetooth</string>
+    <string name="on_hold">On hold</string>
+
+    <!-- Reply-with-message -->
+    <string name="reply_message">Message</string>
+    <string name="reply_title">Reply with message</string>
+    <string name="reply_custom">Write your own…</string>
+    <string name="reply_send">Send</string>
+    <string name="cancel">Cancel</string>
+
+    <!-- Call waiting (2nd incoming) -->
+    <string name="waiting_incoming">Incoming: %1$s</string>
+    <string name="wait_answer_hold">Hold &amp; answer</string>
+    <string name="wait_answer_end">End &amp; answer</string>
+
+    <string-array name="quick_responses">
+        <item>Can\'t talk right now.</item>
+        <item>I\'ll call you back.</item>
+        <item>On my way.</item>
+        <item>Call me later.</item>
+    </string-array>
+
+    <!-- Call states -->
+    <string name="state_connecting">Connecting…</string>
+    <string name="state_dialing">Dialing…</string>
+    <string name="state_ringing">Incoming call</string>
+    <string name="state_holding">On hold</string>
+    <string name="state_disconnected">Call ended</string>
+
+    <!-- Recording feedback -->
+    <string name="rec_started">Recording started</string>
+    <string name="rec_failed">Couldn\'t start recording on this device</string>
+    <string name="rec_denied">Microphone permission is needed to record</string>
+    <string name="rec_saved">Call recording saved</string>
+    <string name="rec_label">REC</string>
+
+    <!-- On-screen keypad / floating dial button -->
+    <string name="hide_keypad">Hide keypad</string>
+    <string name="open_dialer">Open dialer</string>
+    <string name="setting_floating_dial">On-screen keypad</string>
+    <string name="setting_floating_dial_summary">Optional floating keypad on the dial screen</string>
+    <string name="setting_dialpad_tone">Keypad tones</string>
+    <string name="setting_dialpad_tone_summary">Play a dial tone when you press a key (always on during a call)</string>
+    <string name="setting_on">On</string>
+    <string name="setting_off">Off</string>
+    <string name="keypad_switch_label">Show floating keypad button</string>
+    <string name="keypad_switch_desc">This phone dials with its physical number keys, so an on-screen keypad isn\'t needed. Turn this on to add a small floating button on the dial screen that opens an on-screen keypad. The keypad\'s arrow hides it again.</string>
+    <string name="keypad_default_open_label">Open keypad automatically</string>
+    <string name="keypad_default_open_desc">Show the on-screen keypad every time you open the dialer. You can still minimize it for now, and it will open again next time. Made for people who prefer to dial on screen.</string>
+    <string name="keypad_big_label">Large keypad</string>
+    <string name="keypad_big_desc">Make the on-screen keypad bigger to fit a regular smartphone, and add a green dial button at the bottom so you can place calls by touch.</string>
+
+    <!-- Missed call notification -->
+    <string name="notif_channel_missed">Missed calls</string>
+    <string name="missed_call_title">Missed call</string>
+    <string name="missed_call_back">Call back</string>
+    <string name="missed_call_view">View</string>
+
+    <!-- Voicemail notification -->
+    <string name="notif_channel_voicemail">Voicemail</string>
+    <string name="voicemail_title">Voicemail</string>
+    <string name="voicemail_text">You have a new voicemail. Tap to call.</string>
+
+    <!-- Keep running in background (foreground keep-alive + battery exemption) -->
+    <string name="setting_keepalive">Keep running in background</string>
+    <string name="setting_keepalive_summary">Stops the phone from being killed so incoming calls always show</string>
+    <string name="keepalive_heading">Always show incoming calls</string>
+    <string name="keepalive_explain">Some phones (like the Qin F21) aggressively freeze background apps after a few minutes, so an incoming call can\'t open the call screen until you reopen the app by hand. The built-in stock dialer is exempted by the manufacturer; a downloaded app can\'t add itself to that list.\n\nTurning this on keeps a small background service running so the phone never freezes the dialer, and incoming calls always appear. The trade-off is a permanent quiet notification in the shade that you can\'t swipe away. Leave it off unless you\'re missing incoming calls.</string>
+    <string name="keepalive_switch_label">Keep the phone app running</string>
+    <string name="keepalive_battery_heading">Battery optimization</string>
+    <string name="keepalive_battery_explain">For best results also exempt this app from battery optimization, so the system doesn\'t put it to sleep.</string>
+    <string name="keepalive_battery_button">Don\'t optimize this app</string>
+    <string name="keepalive_battery_on">Status: Not optimized (good)</string>
+    <string name="keepalive_battery_off">Status: Optimized (may be killed)</string>
+    <string name="keepalive_channel">Background service</string>
+    <string name="keepalive_notif_title">Phone is ready</string>
+    <string name="keepalive_notif_text">Keeping incoming calls reliable</string>
+
+    <!-- Call recordings folder -->
+    <string name="setting_recording">Call recordings</string>
+    <string name="setting_recording_summary">Saved to Music / Call recordings</string>
+    <string name="recording_heading">Where recordings are saved</string>
+    <string name="recording_explain">When you record a call, the phone\'s built-in recorder saves the audio (both sides) into the Music folder. This app then moves each new recording into a tidy sub-folder, <b>Music / Call recordings</b>.\n\nMoving those files needs the “All files access” permission, because the recording is created by the system recorder, not by this app. Without it, recordings still work — they just stay loose in the Music folder.</string>
+    <string name="recording_grant">Allow All files access</string>
+    <string name="recording_access_on">Status: On — recordings go to Music / Call recordings</string>
+    <string name="recording_access_off">Status: Off — recordings stay in Music</string>
+
+    <!-- Send-key redirect (accessibility helper) -->
+    <string name="setting_redirect">Home Send key</string>
+    <string name="setting_redirect_summary">Make the Send key open this dialer everywhere</string>
+    <string name="redirect_heading">Open this dialer with the Send key</string>
+    <string name="redirect_explain">On this phone the Home screen\'s Send/Call key is locked by the launcher to the built-in stock dialer, and a normal app can\'t change that. This optional helper watches only for the stock dialer opening and instantly switches to PureTech Phone, so the Send key always lands here. It reacts to nothing else. After you turn it on, you may briefly see the stock dialer flash before it switches.\n\nTurn it on under Accessibility → PureTech Phone redirect.</string>
+    <string name="redirect_open_accessibility">Open Accessibility settings</string>
+    <string name="redirect_status_on">Status: On</string>
+    <string name="redirect_status_off">Status: Off</string>
+    <string name="redirect_service_label">PureTech Phone redirect</string>
+    <string name="redirect_service_desc">Lets the Home screen Send/Call key open PureTech Phone instead of the built-in stock dialer. It only reacts to the stock dialer opening and does not read any screen content.</string>
+    <string name="redirect_service_summary">Opens PureTech Phone when the Send key triggers the stock dialer</string>
+</resources>

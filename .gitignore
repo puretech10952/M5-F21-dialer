@@ -1,0 +1,49 @@
+# Built application files
+*.apk
+*.aar
+*.ap_
+*.aab
+
+# Files for the ART/Dalvik VM
+*.dex
+
+# Java class files
+*.class
+
+# Generated files
+bin/
+gen/
+out/
+release/
+
+# Gradle files
+.gradle/
+build/
+**/build/
+
+# Local configuration file (sdk path, etc.)
+local.properties
+
+# Log / diagnostic files
+*.log
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.navigation/
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Keystores & certificates (never publish signing material or truststores)
+*.jks
+*.keystore
+android-cacerts.jks
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Dev scratch artifacts kept in the repo root (screenshots, captures)
+/*.png
+/*.txt
