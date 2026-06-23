@@ -91,6 +91,31 @@ object Prefs {
     fun setBigKeypad(c: Context, on: Boolean) =
         sp(c).edit().putBoolean("big_keypad", on).apply()
 
+    /** Answer/decline incoming calls by sliding a button sideways (Google-style),
+     *  instead of tapping the round Answer/Decline buttons. Off by default. */
+    fun swipeToAnswer(c: Context) = sp(c).getBoolean("swipe_to_answer", false)
+    fun setSwipeToAnswer(c: Context, on: Boolean) =
+        sp(c).edit().putBoolean("swipe_to_answer", on).apply()
+
+    // --- Automatic update checks --------------------------------------------
+
+    const val UPDATE_MANUAL = 0
+    const val UPDATE_DAILY = 1
+    const val UPDATE_WEEKLY = 2
+    const val UPDATE_MONTHLY = 3
+
+    /** How often to check GitHub for a new release in the background. Manual
+     *  (off) by default — the app never reaches the network unless asked. */
+    fun updateFrequency(c: Context) = sp(c).getInt("update_frequency", UPDATE_MANUAL)
+    fun setUpdateFrequency(c: Context, mode: Int) =
+        sp(c).edit().putInt("update_frequency", mode).apply()
+
+    /** Tag of the release we last raised a notification for, so a background
+     *  check doesn't notify about the same version more than once. */
+    fun lastNotifiedTag(c: Context): String? = sp(c).getString("last_notified_tag", null)
+    fun setLastNotifiedTag(c: Context, tag: String) =
+        sp(c).edit().putString("last_notified_tag", tag).apply()
+
     /** Play a DTMF tone when pressing a key on the dial screen. On by default.
      *  (In-call keypad tones always play, regardless of this setting.) */
     fun dialpadTone(c: Context) = sp(c).getBoolean("dialpad_tone", true)

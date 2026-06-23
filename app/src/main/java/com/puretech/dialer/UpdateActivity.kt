@@ -1,13 +1,18 @@
 package com.puretech.dialer
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.puretech.dialer.databinding.ActivityUpdateBinding
 import java.io.File
@@ -24,12 +29,22 @@ class UpdateActivity : AppCompatActivity() {
     private var downloadedApk: File? = null
     private var currentVersionName: String = "0"
 
+    // Remembers the schedule the user just picked so we can apply it once they
+    // grant (or deny) the Android 13 notification permission.
+    private var pendingFrequency: Int? = null
+
+    private val notifPermLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { applyPendingFrequency() }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityUpdateBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         binding.back.setOnClickListener { finish() }
+        binding.menu.setOnClickListener { showScheduleMenu(it) }
+        updateScheduleSummary()
 
         val info = try { packageManager.getPackageInfo(packageName, 0) } catch (e: Exception) { null }
         currentVersionName = info?.versionName ?: "0"
@@ -46,6 +61,64 @@ class UpdateActivity : AppCompatActivity() {
         // downloaded APK can be installed straight away on return.
         if (downloadedApk?.exists() == true && canInstall()) {
             launchInstaller(downloadedApk!!)
+        }
+    }
+
+    // --- Automatic-check schedule (3-dot menu) --------------------------------
+
+    private val freqOrder = intArrayOf(
+        Prefs.UPDATE_MANUAL, Prefs.UPDATE_DAILY, Prefs.UPDATE_WEEKLY, Prefs.UPDATE_MONTHLY
+    )
+
+    private fun showScheduleMenu(anchor: View) {
+        val popup = PopupMenu(this, anchor)
+        val labels = intArrayOf(
+            R.string.update_auto_manual, R.string.update_auto_daily,
+            R.string.update_auto_weekly, R.string.update_auto_monthly
+        )
+        val current = Prefs.updateFrequency(this)
+        labels.forEachIndexed { i, label ->
+            popup.menu.add(GROUP, i, i, label).isCheckable = true
+        }
+        popup.menu.setGroupCheckable(GROUP, true, true)
+        popup.menu.findItem(freqOrder.indexOf(current))?.isChecked = true
+        popup.setOnMenuItemClickListener { item ->
+            chooseFrequency(freqOrder[item.itemId])
+            true
+        }
+        popup.show()
+    }
+
+    private fun chooseFrequency(frequency: Int) {
+        // Turning automatic checks on needs the notification permission to be of
+        // any use — ask for it first (Android 13+), then apply.
+        if (frequency != Prefs.UPDATE_MANUAL &&
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            pendingFrequency = frequency
+            notifPermLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            return
+        }
+        pendingFrequency = frequency
+        applyPendingFrequency()
+    }
+
+    private fun applyPendingFrequency() {
+        val frequency = pendingFrequency ?: return
+        pendingFrequency = null
+        Prefs.setUpdateFrequency(this, frequency)
+        UpdateScheduler.reschedule(this)
+        updateScheduleSummary()
+    }
+
+    private fun updateScheduleSummary() {
+        binding.autoCheckSummary.text = when (Prefs.updateFrequency(this)) {
+            Prefs.UPDATE_DAILY -> getString(R.string.update_auto_summary_fmt, getString(R.string.update_auto_daily))
+            Prefs.UPDATE_WEEKLY -> getString(R.string.update_auto_summary_fmt, getString(R.string.update_auto_weekly))
+            Prefs.UPDATE_MONTHLY -> getString(R.string.update_auto_summary_fmt, getString(R.string.update_auto_monthly))
+            else -> getString(R.string.update_auto_summary_manual)
         }
     }
 
@@ -167,5 +240,9 @@ class UpdateActivity : AppCompatActivity() {
     private fun showStatus(text: String) {
         binding.status.text = text
         binding.status.visibility = View.VISIBLE
+    }
+
+    companion object {
+        private const val GROUP = 1
     }
 }

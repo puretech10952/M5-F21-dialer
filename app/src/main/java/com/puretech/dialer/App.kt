@@ -19,5 +19,8 @@ class App : Application() {
         // Keep-alive foreground service (opt-in) so incoming calls still surface
         // on ROMs that freeze background apps. No-op unless the user enabled it.
         KeepAliveService.start(this)
+        // Make sure the background update-check alarm matches the saved setting
+        // (self-heals if the alarm was lost to a reboot or app update).
+        UpdateScheduler.reschedule(this)
     }
 }

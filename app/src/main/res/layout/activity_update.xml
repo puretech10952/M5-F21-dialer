@@ -38,6 +38,18 @@
             android:textColor="?attr/colorOnSurface"
             android:textSize="28sp"
             android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/menu"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/update_menu"
+            android:padding="10dp"
+            android:src="@drawable/ic_more"
+            app:tint="?attr/colorOnSurface" />
     </LinearLayout>
 
     <ScrollView
@@ -102,6 +114,16 @@
                 android:layout_marginTop="16dp"
                 app:icon="@drawable/ic_update"
                 android:text="@string/update_check" />
+
+            <TextView
+                android:id="@+id/autoCheckSummary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="13sp"
+                tools:text="Automatic checks: Every week" />
 
             <ProgressBar
                 android:id="@+id/checkSpinner"

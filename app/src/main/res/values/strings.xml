@@ -27,6 +27,18 @@
     <string name="update_downloading">Downloading… %1$d%%</string>
     <string name="update_failed">Couldn\'t check for updates. Check your connection and try again.</string>
     <string name="update_install_sources">Allow installing apps from PureTech Phone, then tap Download &amp; install again.</string>
+    <!-- Automatic update checks -->
+    <string name="update_menu">Update options</string>
+    <string name="update_auto_title">Check automatically</string>
+    <string name="update_auto_manual">Manual only</string>
+    <string name="update_auto_daily">Every day</string>
+    <string name="update_auto_weekly">Every week</string>
+    <string name="update_auto_monthly">Every month</string>
+    <string name="update_auto_summary_manual">Automatic checks: off (manual only)</string>
+    <string name="update_auto_summary_fmt">Automatic checks: %1$s</string>
+    <string name="update_notif_channel">Update available</string>
+    <string name="update_notif_title">Update available</string>
+    <string name="update_notif_text">PureTech Phone %1$s is ready to install.</string>
 
     <string name="dial_add_pause">Add 2-sec pause</string>
     <string name="dial_add_wait">Add wait</string>
@@ -232,6 +244,9 @@
     <string name="setting_floating_dial_summary">Optional floating keypad on the dial screen</string>
     <string name="setting_dialpad_tone">Keypad tones</string>
     <string name="setting_dialpad_tone_summary">Play a dial tone when you press a key (always on during a call)</string>
+    <string name="setting_swipe_answer">Swipe to answer</string>
+    <string name="setting_swipe_answer_summary">Slide a button sideways to answer or decline incoming calls, instead of tapping</string>
+    <string name="swipe_to_answer_hint">Slide to answer or decline</string>
     <string name="setting_on">On</string>
     <string name="setting_off">Off</string>
     <string name="keypad_switch_label">Show floating keypad button</string>

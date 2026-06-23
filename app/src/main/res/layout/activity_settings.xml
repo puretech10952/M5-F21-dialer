@@ -108,6 +108,22 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <LinearLayout android:id="@+id/rowSwipeAnswer" style="@style/SettingRowM3">
+                        <ImageView style="@style/SettingIconChip" android:src="@drawable/ic_swap" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView style="@style/SettingTitle" android:text="@string/setting_swipe_answer" />
+                            <TextView style="@style/SettingSummary" android:text="@string/setting_swipe_answer_summary" />
+                        </LinearLayout>
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switchSwipeAnswer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:clickable="false"
+                            android:focusable="false" />
+                    </LinearLayout>
+
                     <LinearLayout android:id="@+id/rowBlocked" style="@style/SettingRowM3">
                         <ImageView style="@style/SettingIconChip" android:src="@drawable/ic_block" />
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"

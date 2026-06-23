@@ -50,6 +50,14 @@ class SettingsActivity : AppCompatActivity() {
         binding.rowDialpadTone.setOnClickListener {
             binding.switchDialpadTone.isChecked = !binding.switchDialpadTone.isChecked
         }
+
+        binding.switchSwipeAnswer.isChecked = Prefs.swipeToAnswer(this)
+        binding.switchSwipeAnswer.setOnCheckedChangeListener { _, checked ->
+            Prefs.setSwipeToAnswer(this, checked)
+        }
+        binding.rowSwipeAnswer.setOnClickListener {
+            binding.switchSwipeAnswer.isChecked = !binding.switchSwipeAnswer.isChecked
+        }
     }
 
 

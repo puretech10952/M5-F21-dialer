@@ -180,6 +180,11 @@
             android:name=".NotificationActionReceiver"
             android:exported="false" />
 
+        <!-- Periodic background update check (scheduled via AlarmManager). -->
+        <receiver
+            android:name=".UpdateCheckReceiver"
+            android:exported="false" />
+
         <!-- Official hook: when we're the default dialer, Telecom delegates the
              missed-call notification to us here instead of posting its own. -->
         <receiver

@@ -72,6 +72,8 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
         binding.btnEnd.setOnClickListener { CallManager.hangup() }
         binding.btnAnswer.setOnClickListener { CallManager.answer() }
         binding.btnDecline.setOnClickListener { CallManager.reject() }
+        binding.swipeIncoming.onAnswer = { CallManager.answer() }
+        binding.swipeIncoming.onDecline = { CallManager.reject() }
         binding.btnMute.setOnClickListener { toggleMute() }
         binding.btnRoute.setOnClickListener { onRouteClick() }
         // The first control is the in-call keypad (DTMF for hotline menus).
@@ -172,14 +174,15 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
         when {
             waiting != null -> {
                 show(binding.waitingPanel)
-                hide(binding.bottomPanel,
-                    binding.incomingControls, binding.btnIncomingMessage, binding.secondaryStrip)
+                hide(binding.bottomPanel, binding.incomingControls, binding.swipeIncomingPanel,
+                    binding.btnIncomingMessage, binding.secondaryStrip)
                 binding.waitingText.text = getString(R.string.waiting_incoming, nameFor(waiting))
                 binding.pulseRing.stop()
                 releaseProximity()
             }
             ringing != null -> {
-                show(binding.incomingControls, binding.btnIncomingMessage)
+                showIncomingControls()
+                show(binding.btnIncomingMessage)
                 hide(binding.bottomPanel,
                     binding.waitingPanel, binding.secondaryStrip)
                 // Echo waves radiating from the avatar while the phone rings.
@@ -190,7 +193,8 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
                 // Keep the panel hidden while the in-call keypad is open.
                 binding.bottomPanel.visibility =
                     if (binding.dtmfOverlay.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-                hide(binding.incomingControls, binding.btnIncomingMessage, binding.waitingPanel)
+                hide(binding.incomingControls, binding.swipeIncomingPanel,
+                    binding.btnIncomingMessage, binding.waitingPanel)
                 binding.pulseRing.stop()
                 bindControlStates()
                 bindSecondaryStrip(held)
@@ -199,6 +203,19 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
         }
         // Keep the REC indicator in sync (e.g. if the framework rejects recording).
         updateRecordIndicator()
+    }
+
+    /** Show either the slide-to-answer control or the round Answer/Decline
+     *  buttons for an incoming call, depending on the user's setting. */
+    private fun showIncomingControls() {
+        if (Prefs.swipeToAnswer(this)) {
+            binding.swipeIncoming.reset()
+            show(binding.swipeIncomingPanel)
+            hide(binding.incomingControls)
+        } else {
+            show(binding.incomingControls)
+            hide(binding.swipeIncomingPanel)
+        }
     }
 
     private fun bindSecondaryStrip(held: Call?) {
@@ -578,13 +595,15 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
         Avatars.bind(binding.avatarInitial, binding.contactPhoto, "Kol Mevaser", null)
         if (previewIncoming) {
             binding.statusText.setText(R.string.state_ringing)
-            show(binding.incomingControls, binding.btnIncomingMessage)
+            showIncomingControls()
+            show(binding.btnIncomingMessage)
             hide(binding.bottomPanel, binding.waitingPanel)
             binding.pulseRing.start()
         } else {
             binding.statusText.text = "00:42"
             binding.hdIcon.visibility = View.VISIBLE
-            hide(binding.incomingControls, binding.btnIncomingMessage, binding.waitingPanel)
+            hide(binding.incomingControls, binding.swipeIncomingPanel,
+                binding.btnIncomingMessage, binding.waitingPanel)
         }
     }
 
