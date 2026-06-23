@@ -72,18 +72,20 @@ class UpdateActivity : AppCompatActivity() {
 
     private fun showScheduleMenu(anchor: View) {
         val popup = PopupMenu(this, anchor)
+        // Non-clickable title at the top so it's clear what the choices control.
+        popup.menu.add(HEADER_GROUP, HEADER_ID, 0, R.string.update_check).isEnabled = false
         val labels = intArrayOf(
             R.string.update_auto_manual, R.string.update_auto_daily,
             R.string.update_auto_weekly, R.string.update_auto_monthly
         )
         val current = Prefs.updateFrequency(this)
         labels.forEachIndexed { i, label ->
-            popup.menu.add(GROUP, i, i, label).isCheckable = true
+            popup.menu.add(GROUP, i, i + 1, label).isCheckable = true
         }
         popup.menu.setGroupCheckable(GROUP, true, true)
         popup.menu.findItem(freqOrder.indexOf(current))?.isChecked = true
         popup.setOnMenuItemClickListener { item ->
-            chooseFrequency(freqOrder[item.itemId])
+            if (item.groupId == GROUP) chooseFrequency(freqOrder[item.itemId])
             true
         }
         popup.show()
@@ -244,5 +246,7 @@ class UpdateActivity : AppCompatActivity() {
 
     companion object {
         private const val GROUP = 1
+        private const val HEADER_GROUP = 2
+        private const val HEADER_ID = 100
     }
 }
