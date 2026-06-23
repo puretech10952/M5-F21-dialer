@@ -25,6 +25,13 @@
     <!-- In-app updater: fetch the latest release from GitHub and install the APK -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!-- Visual voicemail (OMTP/CVVM/VVM3): receive the carrier's status SMS and
+         store downloaded voicemails in the platform voicemail provider. -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="com.android.voicemail.permission.ADD_VOICEMAIL" />
+    <uses-permission android:name="com.android.voicemail.permission.READ_VOICEMAIL" />
+    <uses-permission android:name="com.android.voicemail.permission.WRITE_VOICEMAIL" />
 
     <application
         android:name=".App"
@@ -89,6 +96,7 @@
         <activity android:name=".RecordingSettingsActivity" android:exported="false" />
         <activity android:name=".CallStatsActivity" android:exported="false" />
         <activity android:name=".UpdateActivity" android:exported="false" />
+        <activity android:name=".VoicemailActivity" android:exported="false" />
         <activity android:name=".WelcomeActivity" android:exported="false" />
         <activity android:name=".LegalActivity" android:exported="false" />
         <activity
@@ -184,6 +192,17 @@
         <receiver
             android:name=".UpdateCheckReceiver"
             android:exported="false" />
+
+        <!-- Visual Voicemail: the platform binds this (we're the default dialer)
+             to deliver OMTP STATUS/SYNC SMS from the carrier. -->
+        <service
+            android:name=".vvm.VvmService"
+            android:exported="true"
+            android:permission="android.permission.BIND_VISUAL_VOICEMAIL_SERVICE">
+            <intent-filter>
+                <action android:name="android.telephony.VisualVoicemailService" />
+            </intent-filter>
+        </service>
 
         <!-- Official hook: when we're the default dialer, Telecom delegates the
              missed-call notification to us here instead of posting its own. -->
