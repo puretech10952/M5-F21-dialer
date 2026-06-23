@@ -216,9 +216,9 @@
             android:weightSum="2">
 
             <LinearLayout android:id="@+id/navRecents" style="@style/BottomNavItem">
-                <ImageView style="@style/BottomNavIcon" android:src="@drawable/ic_history"
+                <ImageView style="@style/BottomNavIcon" android:src="@drawable/ic_home"
                     app:tint="?attr/colorPrimary" />
-                <TextView style="@style/BottomNavLabel" android:text="@string/nav_recents"
+                <TextView style="@style/BottomNavLabel" android:text="@string/nav_home"
                     android:textColor="?attr/colorPrimary" />
             </LinearLayout>
 

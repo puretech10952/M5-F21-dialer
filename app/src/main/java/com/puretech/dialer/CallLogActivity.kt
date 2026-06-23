@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.telecom.TelecomManager
 import android.text.format.DateUtils
+import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
@@ -94,6 +95,59 @@ class CallLogActivity : AppCompatActivity() {
 
         loadContacts()
         ensureLogPermission()
+        applyFilterExtra(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        applyFilterExtra(intent)
+    }
+
+    /** Honor a filter passed in from the call-stats screen (e.g. tapping the
+     *  "Incoming" card opens recents showing incoming calls only). */
+    private fun applyFilterExtra(intent: Intent?) {
+        val filter = intent?.getStringExtra(EXTRA_FILTER) ?: return
+        intent.removeExtra(EXTRA_FILTER)
+        if (!binding.searchInput.text.isNullOrBlank()) binding.searchInput.text?.clear()
+        binding.appBar.setExpanded(true, false)
+        // Checking a chip triggers the group's listener, which reloads the list.
+        when (filter) {
+            FILTER_INCOMING -> binding.chipReceived.isChecked = true
+            FILTER_OUTGOING -> binding.chipOutgoing.isChecked = true
+            FILTER_MISSED -> binding.chipMissed.isChecked = true
+            else -> binding.chipAll.isChecked = true
+        }
+    }
+
+    /**
+     * On a keypad phone, pressing a number key while in recents starts dialing:
+     * open the keypad with that digit already entered — just like pressing it on
+     * the home screen. Skipped while the search field is focused (T9 name search).
+     */
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (!binding.searchInput.hasFocus()) {
+            val ch = dialCharFor(keyCode)
+            if (ch != null) {
+                startActivity(
+                    Intent(this, MainActivity::class.java)
+                        .setAction(Intent.ACTION_DIAL)
+                        .setData(Uri.fromParts("tel", ch, null))
+                )
+                return true
+            }
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    private fun dialCharFor(keyCode: Int): String? = when (keyCode) {
+        in KeyEvent.KEYCODE_0..KeyEvent.KEYCODE_9 ->
+            ('0' + (keyCode - KeyEvent.KEYCODE_0)).toString()
+        in KeyEvent.KEYCODE_NUMPAD_0..KeyEvent.KEYCODE_NUMPAD_9 ->
+            ('0' + (keyCode - KeyEvent.KEYCODE_NUMPAD_0)).toString()
+        KeyEvent.KEYCODE_STAR, KeyEvent.KEYCODE_NUMPAD_MULTIPLY -> "*"
+        KeyEvent.KEYCODE_POUND -> "#"
+        else -> null
     }
 
     override fun onResume() {
@@ -446,5 +500,12 @@ class CallLogActivity : AppCompatActivity() {
         packageManager.getPackageInfo(packageName, 0).versionName ?: ""
     } catch (e: Exception) {
         ""
+    }
+
+    companion object {
+        const val EXTRA_FILTER = "filter"
+        const val FILTER_INCOMING = "incoming"
+        const val FILTER_OUTGOING = "outgoing"
+        const val FILTER_MISSED = "missed"
     }
 }

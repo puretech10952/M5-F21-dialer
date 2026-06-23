@@ -1,5 +1,6 @@
 package com.puretech.dialer
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -24,6 +25,12 @@ class CallStatsActivity : AppCompatActivity() {
 
         binding.back.setOnClickListener { finish() }
 
+        // Tapping a breakdown card jumps to the recents list, pre-filtered to
+        // that call direction.
+        binding.cardIncoming.setOnClickListener { openLog(CallLogActivity.FILTER_INCOMING) }
+        binding.cardOutgoing.setOnClickListener { openLog(CallLogActivity.FILTER_OUTGOING) }
+        binding.cardMissed.setOnClickListener { openLog(CallLogActivity.FILTER_MISSED) }
+
         binding.rangeToggle.check(R.id.btnRangeMonth)
         binding.rangeToggle.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (isChecked) renderChart(rangeFor(checkedId))
@@ -38,6 +45,14 @@ class CallStatsActivity : AppCompatActivity() {
                 renderChart(rangeFor(binding.rangeToggle.checkedButtonId))
             }
         }.start()
+    }
+
+    private fun openLog(filter: String) {
+        startActivity(
+            Intent(this, CallLogActivity::class.java)
+                .putExtra(CallLogActivity.EXTRA_FILTER, filter)
+                .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        )
     }
 
     private fun bind(s: CallStats) {

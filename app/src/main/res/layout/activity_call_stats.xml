@@ -96,9 +96,12 @@
 
             <!-- Incoming -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardIncoming"
                 style="@style/SettingsGroupCard"
                 android:layout_marginHorizontal="0dp"
-                android:layout_marginTop="12dp">
+                android:layout_marginTop="12dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout style="@style/StatRow">
 
@@ -119,9 +122,12 @@
 
             <!-- Outgoing -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardOutgoing"
                 style="@style/SettingsGroupCard"
                 android:layout_marginHorizontal="0dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout style="@style/StatRow">
 
@@ -142,9 +148,12 @@
 
             <!-- Missed -->
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardMissed"
                 style="@style/SettingsGroupCard"
                 android:layout_marginHorizontal="0dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="10dp"
+                android:clickable="true"
+                android:focusable="true">
 
                 <LinearLayout style="@style/StatRow">
 

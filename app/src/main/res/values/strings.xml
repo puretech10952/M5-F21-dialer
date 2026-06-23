@@ -59,6 +59,7 @@
     <string name="just_now">Just now</string>
     <string name="min_ago_fmt">%1$d min ago</string>
     <string name="nav_recents">Recents</string>
+    <string name="nav_home">Home</string>
     <string name="nav_keypad">Keypad</string>
     <string name="nav_voicemail">Voicemail</string>
     <string name="no_recents">No recent calls</string>

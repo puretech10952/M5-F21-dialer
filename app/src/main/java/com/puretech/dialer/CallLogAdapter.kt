@@ -127,7 +127,14 @@ class CallLogAdapter(
                         else -> R.drawable.ic_call_received
                     }
                 )
-                typeIcon.imageTintList = ColorStateList.valueOf(if (missed) red else variant)
+                // Colour the direction arrow only (not the text): outgoing green,
+                // missed red, incoming blue.
+                val arrowColor = when (e.type) {
+                    CallLog.Calls.OUTGOING_TYPE -> ContextCompat.getColor(ctx, R.color.call_arrow_outgoing)
+                    CallLog.Calls.MISSED_TYPE, CallLog.Calls.REJECTED_TYPE -> red
+                    else -> ContextCompat.getColor(ctx, R.color.call_arrow_incoming)
+                }
+                typeIcon.imageTintList = ColorStateList.valueOf(arrowColor)
                 // "Mobile • 5 min ago"  (known)  /  "New City, NY • 8 min ago" (unknown)
                 // plus " • SIM 1" on dual-SIM devices.
                 val parts = ArrayList<String>(3)
