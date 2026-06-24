@@ -47,6 +47,9 @@ class MainActivity : AppCompatActivity() {
     private var didAutoOpenKeypad = false
 
     private var allContacts: List<Contact> = emptyList()
+    // Top frequently-called contacts, shown as quick-call shortcuts while the
+    // dial pad is empty (replaced by ranked suggestions once the user types).
+    private var frequentContacts: List<Contact> = emptyList()
     private lateinit var suggestionAdapter: SuggestionAdapter
 
     private val roleLauncher = registerForActivityResult(
@@ -303,6 +306,17 @@ class MainActivity : AppCompatActivity() {
             val list = ContactsRepository.load(applicationContext)
             runOnUiThread {
                 allContacts = list
+                // Top 5 most-called contacts (counts come from the call log via
+                // ContactsRepository), de-duped by number, for the empty-pad shortcuts.
+                frequentContacts = list.asSequence()
+                    .filter { it.timesContacted > 0 }
+                    .sortedWith(
+                        compareByDescending<Contact> { it.timesContacted }
+                            .thenByDescending { it.lastTimeContacted }
+                    )
+                    .distinctBy { it.digits.takeLast(10) }
+                    .take(5)
+                    .toList()
                 updateSuggestions()
             }
         }.start()
@@ -310,9 +324,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateSuggestions() {
         val q = binding.numberInput.text?.filter { it.isDigit() }?.toString() ?: ""
+        // Empty pad → quick-call the most frequently dialled contacts; once a digit
+        // is entered, switch to ranked name/number suggestions.
+        val showFrequent = q.isEmpty()
         suggestionAdapter.submit(
-            if (q.isEmpty()) emptyList() else ContactsRepository.search(q, allContacts)
+            if (showFrequent) frequentContacts else ContactsRepository.search(q, allContacts)
         )
+        binding.frequentLabel.visibility =
+            if (showFrequent && frequentContacts.isNotEmpty()) View.VISIBLE else View.GONE
     }
 
     // --- First-digit capture from the launch intent ---------------------------

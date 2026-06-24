@@ -60,7 +60,8 @@ class ContactsActivity : AppCompatActivity() {
     private fun placeCall() {
         val n = pendingNumber ?: return
         pendingNumber = null
-        telecomManager.placeCall(Uri.fromParts("tel", n, null), Bundle())
+        // Route through Dialer so the default SIM + AI-number block apply here too.
+        Dialer.place(this, Dialer.normalize(this, n))
     }
 
     private fun showOptions(number: String, anchor: View) {

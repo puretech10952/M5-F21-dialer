@@ -58,6 +58,14 @@ class SettingsActivity : AppCompatActivity() {
         binding.rowSwipeAnswer.setOnClickListener {
             binding.switchSwipeAnswer.isChecked = !binding.switchSwipeAnswer.isChecked
         }
+
+        binding.switchBlockAi.isChecked = Prefs.blockAiNumbers(this)
+        binding.switchBlockAi.setOnCheckedChangeListener { _, checked ->
+            Prefs.setBlockAiNumbers(this, checked)
+        }
+        binding.rowBlockAi.setOnClickListener {
+            binding.switchBlockAi.isChecked = !binding.switchBlockAi.isChecked
+        }
     }
 
 

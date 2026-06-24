@@ -124,6 +124,22 @@
                             android:focusable="false" />
                     </LinearLayout>
 
+                    <LinearLayout android:id="@+id/rowBlockAi" style="@style/SettingRowM3">
+                        <ImageView style="@style/SettingIconChip" android:src="@drawable/ic_block" />
+                        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                            android:layout_weight="1" android:orientation="vertical">
+                            <TextView style="@style/SettingTitle" android:text="@string/setting_block_ai" />
+                            <TextView style="@style/SettingSummary" android:text="@string/setting_block_ai_summary" />
+                        </LinearLayout>
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switchBlockAi"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="10dp"
+                            android:clickable="false"
+                            android:focusable="false" />
+                    </LinearLayout>
+
                     <LinearLayout android:id="@+id/rowBlocked" style="@style/SettingRowM3">
                         <ImageView style="@style/SettingIconChip" android:src="@drawable/ic_block" />
                         <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"

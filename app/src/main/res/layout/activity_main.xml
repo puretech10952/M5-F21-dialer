@@ -147,6 +147,20 @@
                 app:icon="@drawable/ic_message" />
         </LinearLayout>
 
+        <!-- Small heading shown above the empty-pad frequently-contacted shortcuts. -->
+        <TextView
+            android:id="@+id/frequentLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="2dp"
+            android:text="@string/frequently_contacted"
+            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textSize="12sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
         <!-- Contact / number suggestions fill the rest -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/suggestions"

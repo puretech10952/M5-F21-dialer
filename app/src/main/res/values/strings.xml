@@ -79,6 +79,7 @@
     <string name="nav_keypad">Keypad</string>
     <string name="nav_voicemail">Voicemail</string>
     <string name="nav_voicemail_experimental">Voicemail (experimental)</string>
+    <string name="frequently_contacted">Frequently contacted</string>
     <string name="no_recents">No recent calls</string>
     <string name="recents_today">Today</string>
     <string name="recents_yesterday">Yesterday</string>
@@ -265,6 +266,9 @@
     <string name="setting_dialpad_tone_summary">Play a dial tone when you press a key (always on during a call)</string>
     <string name="setting_swipe_answer">Swipe to answer</string>
     <string name="setting_swipe_answer_summary">Slide a button sideways to answer or decline incoming calls, instead of tapping</string>
+    <string name="setting_block_ai">Block AI phone numbers</string>
+    <string name="setting_block_ai_summary">Experimental — stop calls to AI voice services (like 1-800-ChatGPT), even from a contact</string>
+    <string name="ai_block_toast">This is an AI phone number and is blocked in Settings</string>
     <string name="swipe_to_answer_hint">Slide to answer or decline</string>
     <string name="setting_on">On</string>
     <string name="setting_off">Off</string>

@@ -97,6 +97,12 @@ object Prefs {
     fun setSwipeToAnswer(c: Context, on: Boolean) =
         sp(c).edit().putBoolean("swipe_to_answer", on).apply()
 
+    /** Experimental: block outgoing calls to known AI phone-call services
+     *  (see [AiBlocklist]), even from a contact. Off by default. */
+    fun blockAiNumbers(c: Context) = sp(c).getBoolean("block_ai_numbers", false)
+    fun setBlockAiNumbers(c: Context, on: Boolean) =
+        sp(c).edit().putBoolean("block_ai_numbers", on).apply()
+
     // --- Automatic update checks --------------------------------------------
 
     const val UPDATE_MANUAL = 0
