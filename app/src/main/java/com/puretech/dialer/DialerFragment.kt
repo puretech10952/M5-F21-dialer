@@ -242,7 +242,9 @@ class DialerFragment : Fragment() {
     }
 
     private fun autoSizeNumberField() {
-        val et = binding.numberInput
+        // A re-posted pass can fire after the view is torn down (back / theme
+        // recreate); bail instead of dereferencing a null binding.
+        val et = (_binding ?: return).numberInput
         val avail = et.width - et.paddingStart - et.paddingEnd
         if (avail <= 0) { et.post { autoSizeNumberField() }; return }
         val sd = resources.displayMetrics.scaledDensity

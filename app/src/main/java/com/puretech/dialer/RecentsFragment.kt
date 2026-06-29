@@ -279,7 +279,7 @@ class RecentsFragment : Fragment() {
                     }
                     else -> all
                 }
-                val rows = buildRows(entries)
+                val rows = buildRows(ctx, entries)
                 ui {
                     logAdapter.submit(rows)
                     binding.emptyText.visibility = if (rows.isEmpty()) View.VISIBLE else View.GONE
@@ -296,11 +296,11 @@ class RecentsFragment : Fragment() {
         binding.emptyText.visibility = View.VISIBLE
     }
 
-    private fun buildRows(entries: List<CallLogEntry>): List<CallLogRow> {
+    private fun buildRows(ctx: Context, entries: List<CallLogEntry>): List<CallLogRow> {
         val rows = ArrayList<CallLogRow>()
         var lastLabel: String? = null
         for (e in entries) {
-            val label = dayLabel(e.date)
+            val label = dayLabel(ctx, e.date)
             if (label != lastLabel) {
                 rows.add(CallLogRow.Header(label)); lastLabel = label
             }
@@ -309,15 +309,15 @@ class RecentsFragment : Fragment() {
         return rows
     }
 
-    private fun dayLabel(date: Long): String {
+    private fun dayLabel(ctx: Context, date: Long): String {
         val diff = ((midnight(System.currentTimeMillis()) - midnight(date)) /
             DateUtils.DAY_IN_MILLIS).toInt()
         return when {
-            diff <= 0 -> getString(R.string.recents_today)
-            diff == 1 -> getString(R.string.recents_yesterday)
-            diff in 2..6 -> DateUtils.formatDateTime(requireContext(), date, DateUtils.FORMAT_SHOW_WEEKDAY)
+            diff <= 0 -> ctx.getString(R.string.recents_today)
+            diff == 1 -> ctx.getString(R.string.recents_yesterday)
+            diff in 2..6 -> DateUtils.formatDateTime(ctx, date, DateUtils.FORMAT_SHOW_WEEKDAY)
             else -> DateUtils.formatDateTime(
-                requireContext(), date, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
+                ctx, date, DateUtils.FORMAT_SHOW_DATE or DateUtils.FORMAT_ABBREV_MONTH
             )
         }
     }

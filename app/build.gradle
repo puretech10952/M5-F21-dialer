@@ -11,8 +11,8 @@ android {
         applicationId "com.puretech.dialer"
         minSdk 29
         targetSdk 34
-        versionCode 167
-        versionName "1.0.3"
+        versionCode 168
+        versionName "1.0.4"
     }
 
     buildTypes {
