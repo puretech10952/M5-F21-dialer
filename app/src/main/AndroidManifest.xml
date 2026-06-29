@@ -75,6 +75,7 @@
         <activity android:name=".CallHistoryActivity" android:exported="false" />
         <activity android:name=".ContactsActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
+        <activity android:name=".ThemeSettingsActivity" android:exported="false" />
         <activity android:name=".ToggleSettingActivity" android:exported="false" />
         <activity android:name=".BlockedNumbersActivity" android:exported="false" />
         <activity android:name=".QuickResponsesActivity" android:exported="false" />

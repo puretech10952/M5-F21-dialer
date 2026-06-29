@@ -22,7 +22,17 @@ class NotificationActionReceiver : BroadcastReceiver() {
                 val number = intent.getStringExtra(EXTRA_NUMBER)
                 val id = intent.getIntExtra(EXTRA_NOTIF_ID, -1)
                 if (id != -1) MissedCallNotifier.cancel(context, id)
+                // Acting on the missed call also clears it so it won't return on reboot.
+                MissedCallNotifier.markCallsRead(context, number ?: "")
                 if (!number.isNullOrBlank()) Dialer.place(context, Dialer.normalize(context, number))
+                return
+            }
+            ACTION_MISSED_DISMISSED -> {
+                val number = intent.getStringExtra(EXTRA_NUMBER)
+                val id = intent.getIntExtra(EXTRA_NOTIF_ID, -1)
+                if (id != -1) MissedCallNotifier.cancel(context, id)
+                // Swiped away → mark read so the framework won't re-post it on reboot.
+                MissedCallNotifier.markCallsRead(context, number ?: "")
                 return
             }
             ACTION_CALL_VOICEMAIL -> {
@@ -49,6 +59,7 @@ class NotificationActionReceiver : BroadcastReceiver() {
         const val ACTION_MUTE = "com.puretech.dialer.action.MUTE"
         const val ACTION_SPEAKER = "com.puretech.dialer.action.SPEAKER"
         const val ACTION_CALL_BACK = "com.puretech.dialer.action.CALL_BACK"
+        const val ACTION_MISSED_DISMISSED = "com.puretech.dialer.action.MISSED_DISMISSED"
         const val ACTION_CALL_VOICEMAIL = "com.puretech.dialer.action.CALL_VOICEMAIL"
         const val EXTRA_NUMBER = "com.puretech.dialer.extra.NUMBER"
         const val EXTRA_NOTIF_ID = "com.puretech.dialer.extra.NOTIF_ID"

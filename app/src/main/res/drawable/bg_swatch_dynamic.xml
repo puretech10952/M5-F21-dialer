@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Multi-color circle representing the Default (Material You / dynamic) option. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <gradient
+        android:type="sweep"
+        android:startColor="#4285F4"
+        android:centerColor="#EA4335"
+        android:endColor="#34A853" />
+    <size android:width="56dp" android:height="56dp" />
+</shape>

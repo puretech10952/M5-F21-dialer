@@ -20,6 +20,9 @@ class App : Application() {
         // palette (Android 12+). Updates automatically when the device theme changes.
         // No-op on older devices, which keep the built-in M3 palette.
         DynamicColors.applyToActivitiesIfAvailable(this)
+        // Apply the user's chosen in-app color theme on top (overrides dynamic color
+        // when a preset is picked; works on devices without Material You too).
+        ThemeManager.install(this)
         // Best-effort voicemail (message-waiting) watcher; no-op without permission.
         VoicemailMonitor.start(this)
         // Keep-alive foreground service (opt-in) so incoming calls still surface

@@ -44,6 +44,9 @@ class CallService : InCallService() {
         }
 
         CallManager.service = this
+        // Own the proximity screen-off for the whole call (works on any screen,
+        // not just the in-call UI). Idempotent across multiple calls.
+        ProximityController.attach(this)
         CallManager.addCall(call)
         // Register the listener FIRST so the call notification is posted before we
         // attempt to open the screen. For a ringing call that notification carries
@@ -76,6 +79,7 @@ class CallService : InCallService() {
         CallManager.removeCall(call)
         if (CallManager.calls.isEmpty()) {
             CallManager.unregisterListener(notifListener)
+            ProximityController.detach()
             CallNotifier.cancel(this)
         }
     }

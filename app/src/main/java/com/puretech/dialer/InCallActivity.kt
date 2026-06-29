@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.os.PowerManager
 import android.provider.ContactsContract
 import android.telecom.Call
 import android.telecom.CallAudioState
@@ -34,9 +33,7 @@ import com.puretech.dialer.databinding.ActivityIncallBinding
 class InCallActivity : AppCompatActivity(), CallManager.Listener {
 
     private lateinit var binding: ActivityIncallBinding
-    private val powerManager by lazy { getSystemService(PowerManager::class.java) }
     private val audioManager by lazy { getSystemService(android.media.AudioManager::class.java) }
-    private var proximityWl: PowerManager.WakeLock? = null
 
     private val preview by lazy { intent.getBooleanExtra(EXTRA_PREVIEW, false) }
     private val previewIncoming by lazy { intent.getBooleanExtra(EXTRA_PREVIEW_INCOMING, false) }
@@ -122,13 +119,11 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
             CallManager.uiVisible = false
             if (CallManager.call != null) CallNotifier.update(this)
         }
-        releaseProximity()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         stopTimer()
-        releaseProximity()
         // NOTE: do not stop recording here — the framework keeps recording with the
         // call and stops on its own when the call ends.
     }
@@ -221,7 +216,6 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
                     binding.secondaryStrip.visibility = View.GONE
                 }
                 binding.pulseRing.start()
-                releaseProximity()
             }
             ringing != null -> {
                 showIncomingControls()
@@ -230,7 +224,6 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
                     binding.waitingPanel, binding.secondaryStrip)
                 // Echo waves radiating from the avatar while the phone rings.
                 binding.pulseRing.start()
-                releaseProximity()
             }
             else -> {
                 // Keep the panel hidden while the in-call keypad is open.
@@ -241,7 +234,6 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
                 binding.pulseRing.stop()
                 bindControlStates()
                 bindSecondaryStrip(held)
-                updateProximity()
             }
         }
         // Keep the REC indicator in sync (e.g. if the framework rejects recording).
@@ -354,7 +346,6 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
         } else {
             CallManager.setSpeaker(!CallManager.isSpeakerOn())
             bindControlStates()
-            updateProximity()
         }
     }
 
@@ -381,7 +372,6 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
         menu.onClick { id ->
             CallManager.setRoute(id)
             bindControlStates()
-            updateProximity()
         }
         menu.show()
     }
@@ -632,26 +622,8 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
         binding.dtmfDigits.visibility = View.VISIBLE
     }
 
-    // --- Proximity -------------------------------------------------------------
-
-    private fun updateProximity() {
-        if (CallManager.activeCall() != null && CallManager.isOnEarpiece()) acquireProximity()
-        else releaseProximity()
-    }
-
-    private fun acquireProximity() {
-        if (proximityWl == null) {
-            if (!powerManager.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) return
-            proximityWl = powerManager.newWakeLock(
-                PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "m5dialer:proximity"
-            )
-        }
-        if (proximityWl?.isHeld == false) proximityWl?.acquire(60 * 60 * 1000L)
-    }
-
-    private fun releaseProximity() {
-        if (proximityWl?.isHeld == true) proximityWl?.release()
-    }
+    // Proximity screen-off is owned by ProximityController for the whole call
+    // (works on any screen, not just here), driven by CallService/CallManager.
 
     // --- Status / duration -----------------------------------------------------
 
@@ -721,7 +693,6 @@ class InCallActivity : AppCompatActivity(), CallManager.Listener {
     private fun finishAndStopRecording() {
         // The framework auto-stops recording when the call ends; nothing to do here.
         stopTimer()
-        releaseProximity()
         if (!isFinishing) finish()
     }
 

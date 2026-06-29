@@ -107,6 +107,10 @@
     <string name="setting_theme_light">Light</string>
     <string name="setting_theme_dark">Dark</string>
     <string name="setting_theme_system">Same as device</string>
+    <string name="theme_appearance">Appearance</string>
+    <string name="theme_color">Color</string>
+    <string name="theme_color_summary">Pick a color for the app. Works on every phone, even without Material You.</string>
+    <string name="theme_default">Default</string>
     <string name="setting_blocked">Blocked numbers</string>
     <string name="setting_blocked_summary">Calls and texts from blocked numbers are rejected</string>
     <string name="setting_quick_responses">Quick responses</string>
@@ -311,6 +315,8 @@
     <string name="recording_heading">Where recordings are saved</string>
     <string name="recording_explain">When you record a call, the phone\'s built-in recorder saves the audio (both sides) into the Music folder. This app then moves each new recording into a tidy sub-folder, <b>Music / Call recordings</b>.\n\nMoving those files needs the “All files access” permission, because the recording is created by the system recorder, not by this app. Without it, recordings still work — they just stay loose in the Music folder.</string>
     <string name="recording_grant">Allow All files access</string>
+    <string name="recording_supported_heading">Device support</string>
+    <string name="recording_supported_devices">Call recording is only supported on the <b>TiQ Mini M5</b> and the <b>Qin F21</b>. On other phones the record button may have no effect, since it relies on each device\'s built-in recorder.</string>
     <string name="recording_access_on">Status: On — recordings go to Music / Call recordings</string>
     <string name="recording_access_off">Status: Off — recordings stay in Music</string>
 

@@ -35,6 +35,12 @@ object Prefs {
         )
     }
 
+    /** In-app color theme id (0 = Default / device dynamic color). See [DialerThemes]. */
+    fun colorTheme(c: Context) = sp(c).getInt("color_theme", DialerThemes.DEFAULT)
+    fun setColorTheme(c: Context, id: Int) {
+        sp(c).edit().putInt("color_theme", id).apply()
+    }
+
     // --- Assisted dialing / home country ------------------------------------
 
     fun assistedDialing(c: Context) = sp(c).getBoolean("assisted", true)

@@ -281,7 +281,10 @@ class HomeActivity : AppCompatActivity() {
                 showTab(Tab.DIALER)
                 dialerFragment.prefillFromIntent(intent)
             }
-            // else: MAIN / CALL_BUTTON → stay on the default Recents tab.
+            // The call/send button (CALL_BUTTON) always opens the call log, even if
+            // the app was last left on the dialer or elsewhere.
+            intent.action == Intent.ACTION_CALL_BUTTON -> showTab(Tab.RECENTS)
+            // else: MAIN → stay on the default Recents tab.
         }
     }
 

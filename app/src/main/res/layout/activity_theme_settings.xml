@@ -23,7 +23,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
-            android:contentDescription="@string/setting_recording"
+            android:contentDescription="@string/setting_theme"
             android:padding="10dp"
             android:src="@drawable/ic_back"
             app:tint="?attr/colorOnSurface" />
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="6dp"
-            android:text="@string/setting_recording"
+            android:text="@string/setting_theme"
             android:textColor="?attr/colorOnSurface"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -50,77 +50,79 @@
             android:orientation="vertical"
             android:paddingBottom="24dp">
 
-            <com.google.android.material.card.MaterialCardView
-                style="@style/SettingsGroupCard"
-                android:layout_marginTop="10dp">
+            <TextView
+                style="@style/SettingsSectionHeader"
+                android:text="@string/theme_appearance" />
 
-                <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                style="@style/SettingsGroupCard">
+
+                <RadioGroup
+                    android:id="@+id/modeGroup"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:padding="8dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <RadioButton
+                        android:id="@+id/modeLight"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/recording_heading"
+                        android:paddingVertical="10dp"
+                        android:paddingStart="8dp"
+                        android:text="@string/setting_theme_light"
                         android:textColor="?attr/colorOnSurface"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
+                        android:textSize="16sp" />
 
-                    <TextView
+                    <RadioButton
+                        android:id="@+id/modeDark"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="@string/recording_explain"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="14sp"
-                        android:lineSpacingMultiplier="1.15" />
+                        android:paddingVertical="10dp"
+                        android:paddingStart="8dp"
+                        android:text="@string/setting_theme_dark"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="16sp" />
 
-                    <TextView
-                        android:id="@+id/status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="16dp"
-                        android:textColor="?attr/colorPrimary"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/grant"
+                    <RadioButton
+                        android:id="@+id/modeSystem"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="14dp"
-                        android:text="@string/recording_grant" />
-                </LinearLayout>
+                        android:paddingVertical="10dp"
+                        android:paddingStart="8dp"
+                        android:text="@string/setting_theme_system"
+                        android:textColor="?attr/colorOnSurface"
+                        android:textSize="16sp" />
+                </RadioGroup>
             </com.google.android.material.card.MaterialCardView>
 
+            <TextView
+                style="@style/SettingsSectionHeader"
+                android:text="@string/theme_color" />
+
             <com.google.android.material.card.MaterialCardView
-                style="@style/SettingsGroupCard"
-                android:layout_marginTop="12dp">
+                style="@style/SettingsGroupCard">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/recording_supported_heading"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
+                    android:padding="16dp">
 
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="@string/recording_supported_devices"
+                        android:layout_marginBottom="6dp"
+                        android:text="@string/theme_color_summary"
                         android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="14sp"
-                        android:lineSpacingMultiplier="1.15" />
+                        android:textSize="13sp"
+                        android:lineSpacingMultiplier="1.1" />
+
+                    <GridLayout
+                        android:id="@+id/swatchGrid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:columnCount="3" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>

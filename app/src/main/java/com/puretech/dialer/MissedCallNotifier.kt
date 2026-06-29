@@ -1,12 +1,17 @@
 package com.puretech.dialer
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
+import android.provider.CallLog
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 
 /**
  * Posts a "Missed call" notification with Call back / View actions. Detected by
@@ -27,10 +32,12 @@ object MissedCallNotifier {
         val id = BASE_ID + (number.ifBlank { "unknown" }.hashCode() and 0xFFFF)
         activeIds.add(id)
 
-        // Tap or "View" → open recents.
+        // Tap or "View" → open recents filtered to the Missed chip.
         val viewPi = PendingIntent.getActivity(
             context, id,
-            Intent(context, HomeActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+            Intent(context, HomeActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                .putExtra(HomeActivity.EXTRA_FILTER, HomeActivity.FILTER_MISSED),
             piFlags()
         )
         // "Call back" → broadcast that places the call and dismisses this notification.
@@ -38,6 +45,16 @@ object MissedCallNotifier {
             context, id,
             Intent(context, NotificationActionReceiver::class.java)
                 .setAction(NotificationActionReceiver.ACTION_CALL_BACK)
+                .putExtra(NotificationActionReceiver.EXTRA_NUMBER, number)
+                .putExtra(NotificationActionReceiver.EXTRA_NOTIF_ID, id),
+            piFlags()
+        )
+        // Swipe-dismiss → mark this caller's missed calls as read so they are NOT
+        // re-posted by the Telecom framework after a reboot.
+        val dismissPi = PendingIntent.getBroadcast(
+            context, id,
+            Intent(context, NotificationActionReceiver::class.java)
+                .setAction(NotificationActionReceiver.ACTION_MISSED_DISMISSED)
                 .putExtra(NotificationActionReceiver.EXTRA_NUMBER, number)
                 .putExtra(NotificationActionReceiver.EXTRA_NOTIF_ID, id),
             piFlags()
@@ -50,6 +67,7 @@ object MissedCallNotifier {
             .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_MISSED_CALL)
             .setContentIntent(viewPi)
+            .setDeleteIntent(dismissPi)
 
         if (number.isNotBlank()) {
             builder.addAction(
@@ -66,6 +84,45 @@ object MissedCallNotifier {
     fun cancel(context: Context, id: Int) {
         activeIds.remove(id)
         manager(context).cancel(id)
+    }
+
+    /**
+     * Marks a caller's missed/rejected calls as read (NEW=0, IS_READ=1) in the call
+     * log so the Telecom framework does not re-post them as missed-call
+     * notifications after a reboot. Called when the user dismisses or acts on the
+     * notification. No-op without WRITE_CALL_LOG.
+     */
+    fun markCallsRead(context: Context, number: String) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALL_LOG)
+            != PackageManager.PERMISSION_GRANTED
+        ) return
+        val values = ContentValues().apply {
+            put(CallLog.Calls.NEW, 0)
+            put(CallLog.Calls.IS_READ, 1)
+        }
+        val types = arrayOf(
+            CallLog.Calls.MISSED_TYPE.toString(),
+            CallLog.Calls.REJECTED_TYPE.toString()
+        )
+        try {
+            if (number.isBlank()) {
+                // Withheld/unknown caller: match log rows with no stored number.
+                context.contentResolver.update(
+                    CallLog.Calls.CONTENT_URI, values,
+                    "${CallLog.Calls.NEW}=1 AND ${CallLog.Calls.TYPE} IN (?, ?) AND " +
+                        "(${CallLog.Calls.NUMBER} IS NULL OR ${CallLog.Calls.NUMBER}='')",
+                    types
+                )
+            } else {
+                context.contentResolver.update(
+                    CallLog.Calls.CONTENT_URI, values,
+                    "${CallLog.Calls.NEW}=1 AND ${CallLog.Calls.TYPE} IN (?, ?) AND " +
+                        "${CallLog.Calls.NUMBER}=?",
+                    types + number
+                )
+            }
+        } catch (_: Exception) {
+        }
     }
 
     /** Clear every missed-call notification we've posted (Telecom sent count 0,

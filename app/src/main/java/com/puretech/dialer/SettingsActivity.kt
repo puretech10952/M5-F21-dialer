@@ -2,7 +2,6 @@ package com.puretech.dialer
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.puretech.dialer.databinding.ActivitySettingsBinding
 
@@ -18,7 +17,9 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.back.setOnClickListener { finish() }
-        binding.rowTheme.setOnClickListener { showThemeDialog() }
+        binding.rowTheme.setOnClickListener {
+            startActivity(Intent(this, ThemeSettingsActivity::class.java))
+        }
         binding.rowBlocked.setOnClickListener {
             startActivity(Intent(this, BlockedNumbersActivity::class.java))
         }
@@ -58,21 +59,4 @@ class SettingsActivity : AppCompatActivity() {
         )
     }
 
-    private fun showThemeDialog() {
-        val labels = arrayOf(
-            getString(R.string.setting_theme_light),
-            getString(R.string.setting_theme_dark),
-            getString(R.string.setting_theme_system)
-        )
-        val modes = intArrayOf(Prefs.THEME_LIGHT, Prefs.THEME_DARK, Prefs.THEME_SYSTEM)
-        val current = modes.indexOf(Prefs.themeMode(this)).coerceAtLeast(0)
-        AlertDialog.Builder(this)
-            .setTitle(R.string.setting_theme)
-            .setSingleChoiceItems(labels, current) { dialog, which ->
-                Prefs.setThemeMode(this, modes[which])
-                dialog.dismiss()
-            }
-            .setNegativeButton(R.string.cancel, null)
-            .show()
-    }
 }
