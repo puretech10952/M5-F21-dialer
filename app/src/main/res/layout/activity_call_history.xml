@@ -98,82 +98,95 @@
             app:tint="?attr/colorOnSurface" />
     </LinearLayout>
 
-    <!-- Total talk time is now the first row of the list (scrolls with it). -->
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/history"
+    <!-- List with the bottom bar overlaid, so the bar can slide down on scroll
+         (same behaviour as the rest of the app). Total talk time is the list's
+         first row and scrolls with it. -->
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingBottom="8dp"
-        android:scrollbars="vertical" />
+        android:layout_weight="1">
 
-    <!-- Bottom bar: Call + Message, right-aligned -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical|end"
-        android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="10dp">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/history"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="92dp"
+            android:scrollbars="vertical" />
 
+        <!-- Bottom bar: Call on the far left, Message on the far right. -->
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+            android:layout_gravity="bottom"
+            android:background="?attr/colorSurfaceContainer"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="10dp">
 
-            <ImageView
-                android:id="@+id/callFab"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="@drawable/bg_circle_solid"
-                android:backgroundTint="#1A8E3A"
-                android:clickable="true"
-                android:focusable="true"
-                android:contentDescription="@string/log_call"
-                android:padding="16dp"
-                android:src="@drawable/ic_call"
-                app:tint="#FFFFFF" />
-
-            <TextView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/log_call"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="12sp" />
-        </LinearLayout>
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:gravity="center_horizontal"
-            android:orientation="vertical">
+                <ImageView
+                    android:id="@+id/callFab"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_circle_solid"
+                    android:backgroundTint="#1A8E3A"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="@string/log_call"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_call"
+                    app:tint="#FFFFFF" />
 
-            <ImageView
-                android:id="@+id/msgBtn"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:background="@drawable/bg_circle_solid"
-                android:backgroundTint="@color/log_card_bg"
-                android:clickable="true"
-                android:focusable="true"
-                android:contentDescription="@string/log_message"
-                android:padding="16dp"
-                android:src="@drawable/ic_message"
-                app:tint="?attr/colorOnSurfaceVariant" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/log_call"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
-            <TextView
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="@string/log_message"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:textSize="12sp" />
+                android:gravity="center_horizontal"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/msgBtn"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:background="@drawable/bg_circle_solid"
+                    android:backgroundTint="@color/log_card_bg"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:contentDescription="@string/log_message"
+                    android:padding="16dp"
+                    android:src="@drawable/ic_message"
+                    app:tint="?attr/colorOnSurfaceVariant" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="@string/log_message"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="12sp" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </FrameLayout>
 
 </LinearLayout>

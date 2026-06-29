@@ -62,6 +62,8 @@ class CallHistoryActivity : AppCompatActivity() {
         val adapter = HistoryAdapter()
         binding.history.layoutManager = LinearLayoutManager(this)
         binding.history.adapter = adapter
+        // Slide the Call/Message bar down on scroll, like the rest of the app.
+        binding.history.addOnScrollListener(BottomBarHider(binding.bottomBar))
 
         Thread {
             val details = CallLogRepository.loadForNumber(applicationContext, number)

@@ -150,7 +150,9 @@ class UpdateActivity : AppCompatActivity() {
         val newer = Updater.isNewer(release.versionName, currentVersionName)
 
         binding.latestVersion.text = getString(R.string.update_latest_fmt, release.versionName)
-        binding.whatsNew.text = release.notes.ifBlank { getString(R.string.update_no_notes) }
+        binding.whatsNew.text =
+            if (release.notes.isBlank()) getString(R.string.update_no_notes)
+            else ReleaseNotesFormatter.format(release.notes)
         binding.latestCard.visibility = View.VISIBLE
 
         if (newer && release.apkUrl != null) {
